@@ -6,6 +6,17 @@
 	source venv/bin/activate
 	pip install -r requirements.txt
 
+## Sentencepiece-malli
+
+`iso-lc` on sentencepiece-ohjelmalla luotu Unigram-malli, joka on koulutettu samalla aineistolla kuin alla oleva lstm2-malli.
+Kaikki tämän repon ohjelmat käyttävät tätä mallia.
+
+## Valmiiksi koulutettu malli
+
+* [lstm2.pth][lstm2] – Koulutettu suomenkielisellä Wikipedialla (696 Mt), suomalaisilla eroottisilla novelleilla (103 Mt) ja Gutenberg-projektin suomenkielisillä teoksilla (464 Mt).
+
+[lstm2]: http://iikkahau.users.cs.helsinki.fi/mallit/lstm2.pth
+
 ## Mallin kouluttaminen ja käyttäminen
 
 Oletetaan, että aineisto on tiedostossa `aineisto.txt`.
