@@ -1,0 +1,12 @@
+*.ipynb
+.ipynb_checkpoints/
+
+*.npy
+models/
+pyhis.csv
+
+venv/
+
+train-old.py
+train-v1.py
+arkisto/
