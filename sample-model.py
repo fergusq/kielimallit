@@ -34,18 +34,15 @@ def predict(vocab, learner, text:str, n_words:int=1, temperature:float=1., min_p
 		xb = xb.new_tensor([idx])[None]
 	return text + sep + sep.join(decoder(learner.data.vocab.textify(new_idx, sep=None)))
 
-def main(vocab_prefix, input_file, model_file):
+def main(vocab_prefix, model_file):
 	vocab = loadVocab(vocab_prefix + ".vocab")
 	spm = sp.SentencePieceProcessor()
 	spm.Load(vocab_prefix + ".model")
-	data = np.load(input_file)
-	train_set = data[len(data)//10:]
-	valid_set = data[:len(data)//10]
-	db = fatext.data.TextLMDataBunch.from_ids(".", vocab, train_set, valid_set)
+	db = fatext.data.TextLMDataBunch.from_ids(".", vocab, np.array([[0]]), np.array([[0]]))
 	learner = fatext.learner.language_model_learner(db, fatext.models.AWD_LSTM, pretrained=False)
 	learner.load(model_file)
 	params = {
-			"temp": [float, 1.0],
+			"temp": [float, 0.7],
 			"top_k": [int, 10],
 			"n": [int, 100],
 			"beam_sz": [int, 1000],
