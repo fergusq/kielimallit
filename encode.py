@@ -1,6 +1,7 @@
 import sentencepiece as spm
 import numpy as np
 import sys
+import fire
 
 sp = spm.SentencePieceProcessor()
 sp.Load("iso-lc.model")
@@ -16,3 +17,6 @@ def main(input_file, output_file):
 
 	ids = np.array(ids)
 	np.save(output_file, ids)
+
+if __name__ == "__main__":
+	fire.Fire(main)
