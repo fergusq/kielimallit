@@ -26,5 +26,4 @@ def main(vocab_file, input_file, epochs=25):
 	learner.save("final_model")
 
 if __name__ == "__main__":
-	print("Main")
 	fire.Fire(main)
