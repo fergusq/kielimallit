@@ -4,6 +4,7 @@ import fastai.text as fatext
 import numpy as np
 import sentencepiece as sp
 import torch
+import readline
 from typing import List
 
 def loadVocab(filename):
@@ -12,14 +13,15 @@ def loadVocab(filename):
 	
 	return fatext.transform.Vocab(tokens)
 
-def predict(vocab, learner, text:str, n_words:int=1, temperature:float=1., min_p:float=None, sep:str=' ',
+def predict(vocab, learner, tokens:List[str], n_words:int=1, temperature:float=1., min_p:float=None,
             excluded_tokens:List[str]=[],
-            decoder=fatext.learner.decode_spec_tokens):
-	"Return the `n_words` that come after `text`."
+            interactive=False,
+            track=""):
+	"Return the `n_words` that come after `tokens`."
 	learner.model.reset()
-	xb,yb = torch.tensor([vocab.numericalize(text.split(sep))]),torch.tensor([0])
-	new_idx = []
-	for _ in range(n_words): #progress_bar(range(n_words), leave=False):
+	xb,yb = torch.tensor([vocab.numericalize(tokens or [""])]),torch.tensor([0])
+	output = []
+	for _ in range(n_words):
 		res = learner.pred_batch(batch=(xb,yb))[0][-1]
 		#if len(new_idx) == 0: learner.model[0].select_hidden([0])
 		for token in excluded_tokens:
@@ -29,12 +31,26 @@ def predict(vocab, learner, text:str, n_words:int=1, temperature:float=1., min_p
 				warn(f"There is no item with probability >= {min_p}, try a lower value.")
 			else: res[res < min_p] = 0.
 		if temperature != 1.: res.pow_(1 / temperature)
-		idx = torch.multinomial(res, 1).item()
-		new_idx.append(idx)
+		if interactive:
+			argsort = res.argsort().tolist()
+			print("".join(tokens+output))
+			print(*["\t%d. %s (%f)" % (i + 1, learner.data.vocab.itos[n], res[n]) for i, n in enumerate(argsort[:-11:-1])], sep="\n")
+			try:
+				n = int(input("> "))
+				if n == 0: break
+				idx = argsort[-n]
+			except:
+				idx = torch.multinomial(res, 1).item()
+		else:
+			idx = torch.multinomial(res, 1).item()
+		token = learner.data.vocab.itos[idx]
+		if track and track in learner.data.vocab.stoi:
+			token = "\x1b[48;2;%d;0;0m%s" % (min(int((res[learner.data.vocab.stoi[track]]**0.1)*255), 255), token) 
+		output.append(token)
 		xb = xb.new_tensor([idx])[None]
-	return text + sep + sep.join(decoder(learner.data.vocab.textify(new_idx, sep=None)))
+	return tokens + output
 
-def main(vocab_prefix, model_file):
+def main(vocab_prefix, model_file, n=0):
 	vocab = loadVocab(vocab_prefix + ".vocab")
 	spm = sp.SentencePieceProcessor()
 	spm.Load(vocab_prefix + ".model")
@@ -47,8 +63,13 @@ def main(vocab_prefix, model_file):
 			"n": [int, 100],
 			"beam_sz": [int, 1000],
 			"type": [str, "no beam"],
-			"excl": [lambda s: s.split(" "), ["<unk>"]]
+			"excl": [lambda s: s.split(" "), ["<unk>"]],
+			"interactive": [bool, False],
+			"track": [str, ""]
 	}
+	if n:
+		print(predict(vocab, learner, " ".join(spm.EncodeAsPieces("xxbos")), n, temperature=0.7).replace(" ", "").replace("▁", " "))
+		return
 	while True:
 		text = input("> ").lower()
 		for key in params:
@@ -56,14 +77,18 @@ def main(vocab_prefix, model_file):
 				params[key][1] = params[key][0](text[len("/%s " % key):])
 				break
 		else:
-			tokens = " ".join(spm.EncodeAsPieces(text))
+			tokens = spm.EncodeAsPieces(text)
 			if params["type"][1] == "beam":
-				prediction = learner.beam_search(tokens, params["n"][1], temperature=params["temp"][1], top_k=params["top_k"][1], beam_sz=params["beam_sz"][1])
+				prediction = learner.beam_search(" ".join(tokens), params["n"][1], temperature=params["temp"][1], top_k=params["top_k"][1], beam_sz=params["beam_sz"][1]).split(" ")
 			else:
-				prediction = predict(vocab, learner, tokens, params["n"][1], temperature=params["temp"][1], excluded_tokens=params["excl"][1])
+				prediction = predict(vocab, learner, tokens, params["n"][1],
+					temperature=params["temp"][1],
+					excluded_tokens=params["excl"][1],
+					interactive=params["interactive"][1],
+					track=params["track"][1])
 			
 			out = ""
-			for i, token in enumerate(prediction.split(" ")):
+			for i, token in enumerate(prediction):
 				out += "\x1b[" + ("0m" if i%2 == 0 else "4m") + token.replace("▁", " ")
 			
 			print(out + "\x1b[0m")
