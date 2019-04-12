@@ -4,6 +4,7 @@ import fastai.text as fatext
 import numpy as np
 import sentencepiece as sp
 import torch
+import torch.nn.functional as F
 import readline
 from typing import List
 
@@ -13,40 +14,81 @@ def loadVocab(filename):
 	
 	return fatext.transform.Vocab(tokens)
 
+def pred_batch(learner, xb):
+	a = learner.model.eval()(xb)
+	return F.softmax(a[0].detach().cpu(), dim=-1), a[1]
+
 def predict(vocab, learner, tokens:List[str], n_words:int=1, temperature:float=1., min_p:float=None,
             excluded_tokens:List[str]=[],
+            promoted_tokens:List[str]=[],
             interactive=False,
             track=""):
 	"Return the `n_words` that come after `tokens`."
 	learner.model.reset()
-	xb,yb = torch.tensor([vocab.numericalize(tokens or [""])]),torch.tensor([0])
-	output = []
-	for _ in range(n_words):
-		res = learner.pred_batch(batch=(xb,yb))[0][-1]
+	# generoidaan -p-tilassa todennäköisyydet myös kehotteelle, joten ei syötetä kehotetta mallille alussa
+	if track == "-p":
+		xb = torch.tensor([[0]])
+		output = tokens
+		tokens = []
+	else:
+		xb = torch.tensor([vocab.numericalize(tokens or [""])])
+		output = []
+	for i_x in range(len(output) + n_words):
+		# -n-tilassa lasketaan lauseupotuksen arvot (en uskalla käyttää tätä muulloin, pitäisi kyllä)
+		if track and track.startswith("-n"):
+			res, embeddings = pred_batch(learner, xb)
+			res = res[0][-1]
+		else:
+			res = learner.pred_batch(batch=(xb,torch.tensor([0])))[0][-1]
+		
 		#if len(new_idx) == 0: learner.model[0].select_hidden([0])
+		# muutetaan poissuljettujen ja tuettujen sanakkeiden todennäköisyydet
 		for token in excluded_tokens:
 			res[learner.data.vocab.stoi[token]] = 0.
+		for token in promoted_tokens:
+			res[learner.data.vocab.stoi[token]] *= 10.
+		
 		if min_p is not None: 
 			if (res >= min_p).float().sum() == 0:
 				warn(f"There is no item with probability >= {min_p}, try a lower value.")
 			else: res[res < min_p] = 0.
+		
 		if temperature != 1.: res.pow_(1 / temperature)
-		if interactive:
+		
+		# otetaan output-taulukosta valmis arvo, käytetään -p-tilassa todennäköisyyksien laskemiseen kehotteelle
+		if len(output) > i_x:
+			idx = learner.data.vocab.stoi[output[i_x]]
+		# interaktiivisessa tilassa kysytään käyttäjältä
+		elif interactive:
 			argsort = res.argsort().tolist()
 			print("".join(tokens+output))
-			print(*["\t%d. %s (%f)" % (i + 1, learner.data.vocab.itos[n], res[n]) for i, n in enumerate(argsort[:-11:-1])], sep="\n")
+			print(*["\t%d. %s (%f)" % (i + 1, learner.data.vocab.itos[n], res[n]) for i, n in enumerate(argsort[:-16:-1])], sep="\n")
 			try:
 				n = int(input("> "))
 				if n == 0: break
 				idx = argsort[-n]
 			except:
 				idx = torch.multinomial(res, 1).item()
+		# muulloin arvotaan jokin arvo
 		else:
 			idx = torch.multinomial(res, 1).item()
+		
 		token = learner.data.vocab.itos[idx]
-		if track and track in learner.data.vocab.stoi:
-			token = "\x1b[48;2;%d;0;0m%s" % (min(int((res[learner.data.vocab.stoi[track]]**0.1)*255), 255), token) 
-		output.append(token)
+		
+		# lisätään tarvittaessa väritys sanakkeeseen
+		if track and track[:2] not in ["-n", "-p"] and track in learner.data.vocab.stoi:
+			token = "\x1b[48;2;%d;0;0m%s" % (min(int((res[learner.data.vocab.stoi[track]]**0.1)*255), 255), token)
+		elif track and track == "-p":
+			token = "\x1b[48;2;%d;0;0m%s" % (min(int((res[idx]**0.1)*255), 255), token)
+		elif track and track.startswith("-n"):
+			n = int(track[2:])
+			token = "\x1b[48;2;%d;0;0m%s" % (min(int(((0.5+embeddings[2][0][0][n]/2))*255), 255), token) 
+		
+		if len(output) <= i_x:
+			output.append(token)
+		else:
+			output[i_x] = token
+		
 		xb = xb.new_tensor([idx])[None]
 	return tokens + output
 
@@ -64,8 +106,9 @@ def main(vocab_prefix, model_file, n=0):
 			"beam_sz": [int, 1000],
 			"type": [str, "no beam"],
 			"excl": [lambda s: s.split(" "), ["<unk>"]],
+			"promo": [lambda s: s.split(" "), []],
 			"interactive": [bool, False],
-			"track": [str, ""]
+			"color": [str, ""]
 	}
 	if n:
 		print(predict(vocab, learner, " ".join(spm.EncodeAsPieces("xxbos")), n, temperature=0.7).replace(" ", "").replace("▁", " "))
@@ -84,8 +127,9 @@ def main(vocab_prefix, model_file, n=0):
 				prediction = predict(vocab, learner, tokens, params["n"][1],
 					temperature=params["temp"][1],
 					excluded_tokens=params["excl"][1],
+					promoted_tokens=params["promo"][1],
 					interactive=params["interactive"][1],
-					track=params["track"][1])
+					track=params["color"][1])
 			
 			out = ""
 			for i, token in enumerate(prediction):
