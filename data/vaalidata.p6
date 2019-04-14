@@ -20,6 +20,11 @@ for @data[0].kv -> $i, $header {
 	}	
 }
 
+for %questions.kv -> $question, $ids {
+	next without $ids.text-idx;
+	note "{$ids.id}\t$question.trim()";
+}
+
 my @output;
 
 for @data[1..*] -> @candidate {
