@@ -5,6 +5,8 @@ lang: fi-FI
 
 \[Kirjainten koko on asetettu oikein ja rivivälejä lisätty lukemisen helpottamiseksi.\]
 
+---
+
 Jos mies ei olisi voinut edes ilmoittaa, että hän olisi mielelläni käynyt, mutta juuri niin, että sain. Kello oli noin neljä. Olin aivan varma, että olin hänelle liian iso, ja hän oli vielä varsin paljon. Hän oli todella muuttunut jouduttuani hänen kanssaan. Hän oli ollut naimisissa ja hänellä oli jakaminen. Hän oli aina ollut jo päässyt uimaan. En ollut aiemmin nähnyt ketään, mutta katsoin miestä ja hymyilin hänelle. Aloin riisua häntä ja aloin riisua häntä. Hän nousi seisomaan ja veti minut lähelle jaloistani.
 
 Vaimoni istui sohvalle ja sanoi, että olen kuullut. Hän oli jo saanut tietää, että olin ollut kaverini kanssa sängyssä. Hän oli kuitenkin jo pitkään ollut kotona, enkä halunnut ottaa häntä. Hän oli miehen kanssa, joka oli tullut mukaan. Hän oli kuitenkin kovin kiinnostunut seksistä. Hän halusi sanoa jotain, mutta ei voinut olla täysin vakuutettu, että hän ehkä olisi voisi vastaisuudessaan tehdä minulle oman asunnon.. ,.. mitä hän oli tehnyt?
