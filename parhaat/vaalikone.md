@@ -122,7 +122,7 @@ geometry:
 |0|0|0|0|X|kyllä.|
 |0|0|0|0|X|en ole varma siitä, kuka ei ole täysin samaa mieltä, joten olen henkilökohtaisesti samaa mieltä. peruspalvelut ovat tärkeintä, mutta niiden täytyy olla aina vain julkisia.|
 |0|0|0|X|0|pienet palvelut ovat julkisia ja yksityisiä. yksityisiä palveluja on myös erittäin vähän. yksityisten palveluiden rinnalla voidaan täydentää julkisia palveluja.|
-|0|0|0|X|0|julkiset palvelut voidaan täydentää silloin, kun julkinen sektori, sektori, täydentää palveluja, perusteluja ja palveluita. xxss kysymys 3, vastaus 5, perustelu: sähköauto ja biokaasupäästöjä voidaan vähentää, koska sähköautot ovat kunnossa.|
+|0|0|0|X|0|julkiset palvelut voidaan täydentää silloin, kun julkinen sektori, sektori, täydentää palveluja, perusteluja ja palveluita.|
 ## Koulujen kesälomia tulee siirtää kahdella viikolla niin, että ne alkavat kesäkuun puolivälissä ja päättyvät elokuun lopulla.
 |1|2|3|4|5|Perustelut|
 |-|-|-|-|-|----------|
@@ -161,6 +161,7 @@ geometry:
 |0|0|0|0|X|uusiutuvien polttomoottoriautojen kieltäminen ei ole mahdollista, mutta on olemassa myös biokaasun kokonaispäästöjä (0%), vaikka bensa- ja dieselautojen myynnin kieltäminen on mahdollista.|
 |0|0|0|0|X|tällä hetkellä ei.|
 |0|0|0|0|X|autokannan on oltava turvallinen ja ainoa vaihtoehto, joka vaatii päästöjä.|
+|0|0|0|0|X|sähköauto ja biokaasupäästöjä voidaan vähentää, koska sähköautot ovat kunnossa.|
 ## Vanhustenhoidon ulkoistamista yksityisille toimijoille tulee lisätä.
 |1|2|3|4|5|Perustelut|
 |-|-|-|-|-|----------|
