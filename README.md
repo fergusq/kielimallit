@@ -9,6 +9,7 @@
 ## Sentencepiece-malli
 
 `iso-lc` on sentencepiece-ohjelmalla luotu Unigram-malli, joka on koulutettu samalla aineistolla kuin alla oleva lstm2-malli.
+Mallissa on 24000 sanaketta.
 Kaikki tämän repon ohjelmat käyttävät tätä mallia.
 
 ## LSTM-malli
@@ -20,7 +21,7 @@ Varsinaisessa mallissa on oletusasetusten mukaisesti 3 kerrosta, joissa on 1150,
 
 ### Valmiiksi koulutettu malli
 
-* [lstm2.pth][lstm2] – Mallissa on 24000 sanaketta. Koulutettu suomenkielisellä Wikipedialla (696 Mt), suomalaisilla eroottisilla novelleilla (103 Mt) ja Gutenberg-projektin suomenkielisillä teoksilla (464 Mt).
+* [lstm2.pth][lstm2] – Koulutettu suomenkielisellä Wikipedialla (696 Mt), suomalaisilla eroottisilla novelleilla (103 Mt) ja Gutenberg-projektin suomenkielisillä teoksilla (464 Mt).
 
 [lstm2]: http://iikkahau.users.cs.helsinki.fi/mallit/lstm2.pth
 
