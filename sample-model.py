@@ -14,6 +14,9 @@ def loadVocab(filename):
 	
 	return fatext.transform.Vocab(tokens)
 
+def loadEnVocab(filename):
+	return fatext.transform.Vocab(np.load(filename))
+
 def pred_batch(learner, xb):
 	a = learner.model.eval()(xb)
 	return F.softmax(a[0].detach().cpu(), dim=-1), a[1]
@@ -92,10 +95,13 @@ def predict(vocab, learner, tokens:List[str], n_words:int=1, temperature:float=1
 		xb = xb.new_tensor([idx])[None]
 	return tokens + output
 
-def main(vocab_prefix, model_file, n=0):
-	vocab = loadVocab(vocab_prefix + ".vocab")
-	spm = sp.SentencePieceProcessor()
-	spm.Load(vocab_prefix + ".model")
+def main(vocab_prefix, model_file, n=0, en=False):
+	if not en:
+		vocab = loadVocab(vocab_prefix + ".vocab")
+		spm = sp.SentencePieceProcessor()
+		spm.Load(vocab_prefix + ".model")
+	else:
+		vocab = loadEnVocab(vocab_prefix)
 	db = fatext.data.TextLMDataBunch.from_ids(".", vocab, np.array([[0]]), np.array([[0]]))
 	learner = fatext.learner.language_model_learner(db, fatext.models.AWD_LSTM, pretrained=False)
 	learner.load(model_file)
@@ -111,7 +117,7 @@ def main(vocab_prefix, model_file, n=0):
 			"color": [str, ""]
 	}
 	if n:
-		print(predict(vocab, learner, " ".join(spm.EncodeAsPieces("xxbos")), n, temperature=0.7).replace(" ", "").replace("▁", " "))
+		print("".join(predict(vocab, learner, spm.EncodeAsPieces("xxbos"), n, temperature=0.7)).replace("▁", " "))
 		return
 	while True:
 		text = input("> ").lower()
@@ -120,7 +126,10 @@ def main(vocab_prefix, model_file, n=0):
 				params[key][1] = params[key][0](text[len("/%s " % key):])
 				break
 		else:
-			tokens = spm.EncodeAsPieces(text)
+			if not en:
+				tokens = spm.EncodeAsPieces(text)
+			else:
+				tokens = vocab.numericalize(text.split(" "))
 			if params["type"][1] == "beam":
 				prediction = learner.beam_search(" ".join(tokens), params["n"][1], temperature=params["temp"][1], top_k=params["top_k"][1], beam_sz=params["beam_sz"][1]).split(" ")
 			else:
@@ -134,6 +143,8 @@ def main(vocab_prefix, model_file, n=0):
 			out = ""
 			for i, token in enumerate(prediction):
 				out += "\x1b[" + ("0m" if i%2 == 0 else "4m") + token.replace("▁", " ")
+				if en:
+					out += " "
 			
 			print(out + "\x1b[0m")
 
