@@ -95,7 +95,7 @@ def predict(vocab, learner, tokens:List[str], n_words:int=1, temperature:float=1
 		xb = xb.new_tensor([idx])[None]
 	return tokens + output
 
-def main(vocab_prefix, model_file, n=0, en=False):
+def main(vocab_prefix, model_file, n=0, en=False, prompt=""):
 	if not en:
 		vocab = loadVocab(vocab_prefix + ".vocab")
 		spm = sp.SentencePieceProcessor()
@@ -117,7 +117,7 @@ def main(vocab_prefix, model_file, n=0, en=False):
 			"color": [str, ""]
 	}
 	if n:
-		print("".join(predict(vocab, learner, spm.EncodeAsPieces("xxbos"), n, temperature=0.7)).replace("▁", " "))
+		print("".join(predict(vocab, learner, spm.EncodeAsPieces(prompt), n, temperature=0.7)).replace("▁", " "))
 		return
 	while True:
 		text = input("> ").lower()
