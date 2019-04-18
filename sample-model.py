@@ -120,7 +120,11 @@ def main(vocab_prefix, model_file, n=0, en=False, prompt=""):
 		print("".join(predict(vocab, learner, spm.EncodeAsPieces(prompt), n, temperature=0.7)).replace("▁", " "))
 		return
 	while True:
-		text = input("> ").lower()
+		try:
+			text = input("> ").lower()
+		except EOFError:
+			break
+		
 		for key in params:
 			if text.startswith("/%s " % key):
 				params[key][1] = params[key][0](text[len("/%s " % key):])
