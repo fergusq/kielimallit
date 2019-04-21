@@ -54,6 +54,9 @@ my Str @relations = <rakastat ihailet vihaat kadehdit>;
 
 # Muuttujat
 
+my Var $intro-v = var "intro", {predict "@characters[0..^*].join(Q/, /) ja @characters[*-1] ovat"};
+$intro-v.update;
+
 for @characters -> $char {
 	my Var $v = var $char, {predict "$char asui lapsena"};
 	$v.update;
@@ -80,14 +83,13 @@ sub make-pdf() {
 
 	my $fh = open tmp-file, :w;
 
-	$fh.put: "---\ntitle: Hahmolomakkeet\nlang: fi-FI\n...";
-
+	$fh.put: "---\ntitle: Hahmolomakkeet\nlang: fi-FI\n...\n\n{get-val Q/intro/}\n";
 	for @characters -> $char {
 		$fh.put: "\n---\n\n# $char";
 		$fh.put: get-val $char;
 		for @characters -> $friend {
 			next if $char eq $friend;
-			$fh.put: "\n## $friend";
+			$fh.put: "\n## Tuttu: $friend";
 			$fh.put: get-val "$char -> $friend";
 		}
 	}
@@ -100,13 +102,13 @@ sub make-pdf() {
 
 loop {
 	make-pdf;
+
 	my @vars = %vars.keys.sort;
 	say "\t{.key + 1}. {.value}" for @vars.pairs;
+	
 	my $input = prompt "Laske uudelleen [1-@vars.elems()] » ";
-	last without $input;
-	with $input.Int {
+	with $input and $input.Int {
 		%vars{@vars[$_ - 1]}.update;
-		make-pdf;
 	} else {
 		last;
 	}
