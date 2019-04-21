@@ -4,6 +4,7 @@
 *.npy
 models/
 pyhis.csv
+skrolli.csv
 
 venv/
 
