@@ -28,8 +28,8 @@ def predict(vocab, learner, tokens:List[str], n_words:int=1, temperature:float=1
             track=""):
 	"Return the `n_words` that come after `tokens`."
 	learner.model.reset()
-	# generoidaan -p-tilassa todennäköisyydet myös kehotteelle, joten ei syötetä kehotetta mallille alussa
-	if track == "-p":
+	# generoidaan väritystilassa todennäköisyydet myös kehotteelle, joten ei syötetä kehotetta mallille alussa
+	if track != "":
 		xb = torch.tensor([[0]])
 		output = tokens
 		tokens = []
@@ -85,7 +85,7 @@ def predict(vocab, learner, tokens:List[str], n_words:int=1, temperature:float=1
 			token = "\x1b[48;2;%d;0;0m%s" % (min(int((res[idx]**0.1)*255), 255), token)
 		elif track and track.startswith("-n"):
 			n = int(track[2:])
-			token = "\x1b[48;2;%d;0;0m%s" % (min(int(((0.5+embeddings[2][0][0][n]/2))*255), 255), token) 
+			token = get_neuron_color(embeddings, n, token)
 		
 		if len(output) <= i_x:
 			output.append(token)
@@ -95,7 +95,29 @@ def predict(vocab, learner, tokens:List[str], n_words:int=1, temperature:float=1
 		xb = xb.new_tensor([idx])[None]
 	return tokens + output
 
-def main(vocab_prefix, model_file, n=0, en=False, prompt=""):
+def create_heatmaps(vocab, learner, tokens:List[str], temperature:float=1.):
+	learner.model.reset()
+	xb = torch.tensor([[0]])
+	output = [""] * 400
+	for token in tokens:
+		idx = learner.data.vocab.stoi[token]
+		xb = xb.new_tensor([idx])[None]
+		_, embeddings = pred_batch(learner, xb)
+		
+		for n in range(400):
+			output[n] += get_neuron_color(embeddings, n, token)
+		
+	for n in range(400):
+		print(n)
+		print(output[n])
+		print()
+
+def get_neuron_color(embeddings, n, token):
+	red = max(embeddings[2][0][-1][n], 0)
+	blue = max(-embeddings[2][0][-1][n], 0)
+	return "\x1b[48;2;%d;0;%dm%s" % (min(int(red*255), 255), min(int(blue*255), 255), token)
+
+def main(vocab_prefix, model_file, n=0, en=False, prompt="", heatmaps=False):
 	if not en:
 		vocab = loadVocab(vocab_prefix + ".vocab")
 		spm = sp.SentencePieceProcessor()
@@ -113,12 +135,16 @@ def main(vocab_prefix, model_file, n=0, en=False, prompt=""):
 			"type": [str, "no beam"],
 			"excl": [lambda s: s.split(" "), ["<unk>"]],
 			"promo": [lambda s: s.split(" "), []],
-			"interactive": [bool, False],
+			"interactive": [lambda s: (False if s.lower() in ["", "0", "false", "f"] else True), False],
 			"color": [str, ""]
 	}
 	if n:
 		print("".join(predict(vocab, learner, spm.EncodeAsPieces(prompt), n, temperature=0.7)).replace("▁", " "))
 		return
+	if heatmaps:
+		create_heatmaps(vocab, learner, spm.EncodeAsPieces(prompt), temperature=0.7)
+		return
+	
 	while True:
 		try:
 			text = input("> ").lower()
