@@ -179,6 +179,12 @@ _boeing 123 on vuonna 2019 julkistettu_ minibaerin valmistama urheiluauto. autos
 
 ---
 
+_hän esiintyi elokuvissa_ "todellakin" (1971) ja "little to a brick’s love" (1972). "the adventures of war" on seitsemäs osa
+
+"boctor rangers 2":n ohjasivat steve court ja tim mclander. elokuvan pääosissa ovat william barvis, nick henley, steven brodeur, algarzy, george harrison, blues, hector ja david mills. elokuva sai ensi-iltansa 5. joulukuuta vuonna 1970. elokuva sai ensi
+
+---
+
 \[lstm3 tästä eteenpäin\]
 
 _john smith on yhdysvaltalainen laulaja, lauluntekijä ja_ kuvaaja. muiden muassa "scarborough" ja "lady" ovat saaneet nimensä helmikuussa 2009 julkaistulle "the circus of the dead" -albumille, joka sisälsi yhtyeen instrumentaalin "twin't be one like the island". "sweet-" ja "avis" -albumin toinen single "let's limit" julkaistiin 10. maaliskuuta 2007. kappale on kolmas single ”you are the other” (1973), jonka on ohjannut gregory smith.
