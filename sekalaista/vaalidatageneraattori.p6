@@ -14,7 +14,7 @@ my $form = qq:to"EOT";
 <form>
 	Valitse kysymys:
 	<select name="kysymys">
-		%questions.sort(*.key.Int).map({"<option value={$_.key}>{$_.value}</option>"}).join("\n")
+		%questions.sort(*.key.Int).map({qq[<option value={$_.key}>{$_.value}</option>]}).join(qq[\n])
 	</select>
 	<input type="submit">
 </form>
@@ -67,7 +67,7 @@ my $app = sub (%env) {
 				<h2> %questions{$q-id} </h2>
 				<table>
 				<tr><th>Täysin eri mieltä</th><th></th><th>En osaa sanoa</th><th></th><th>Täysin samaa mieltä</th></tr>
-				<tr> @a.map({"<td> $_ </td>"}).join() </tr>
+				<tr> @a.map({qq[<td> $_ </td>]}).join() </tr>
 				<tr><td class=desc colspan=5>Perustelut:</td></tr>
 				<tr><td class=text colspan=5> $text </td></tr>
 				</table>
