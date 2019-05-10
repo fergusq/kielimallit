@@ -27,7 +27,7 @@ Malli on myös koulutettu Fastai-kirjastolla ja käyttää sen oletusasetuksia.
 
 [transformerxl]: https://arxiv.org/pdf/1901.02860.pdf
 
-### Valmiiksi koulutetut mallit
+## Valmiiksi koulutetut mallit
 
 Mallit on koulutettu suomenkielisellä Wikipedialla (696 Mt), suomalaisilla eroottisilla novelleilla (103 Mt) ja Gutenberg-projektin suomenkielisillä teoksilla (464 Mt).
 
