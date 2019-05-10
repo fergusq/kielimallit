@@ -117,7 +117,7 @@ def get_neuron_color(embeddings, n, token):
 	blue = max(-embeddings[2][0][-1][n], 0)
 	return "\x1b[48;2;%d;0;%dm%s" % (min(int(red*255), 255), min(int(blue*255), 255), token)
 
-def main(vocab_prefix, model_file, n=0, en=False, prompt="", heatmaps=False):
+def main(vocab_prefix, model_file, n=0, en=False, prompt="", heatmaps=False, transformerxl=False):
 	if not en:
 		vocab = loadVocab(vocab_prefix + ".vocab")
 		spm = sp.SentencePieceProcessor()
@@ -125,7 +125,7 @@ def main(vocab_prefix, model_file, n=0, en=False, prompt="", heatmaps=False):
 	else:
 		vocab = loadEnVocab(vocab_prefix)
 	db = fatext.data.TextLMDataBunch.from_ids(".", vocab, np.array([[0]]), np.array([[0]]))
-	learner = fatext.learner.language_model_learner(db, fatext.models.AWD_LSTM, pretrained=False)
+	learner = fatext.learner.language_model_learner(db, fatext.models.AWD_LSTM if not transformerxl else fatext.models.TransformerXL, pretrained=False)
 	learner.load(model_file)
 	params = {
 			"temp": [float, 0.7],

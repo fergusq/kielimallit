@@ -14,16 +14,28 @@ Kaikki tämän repon ohjelmat käyttävät tätä mallia.
 
 ## LSTM-malli
 
-Projektissa käytetään [AWD-LSTM-mallia][awd-lstm], joka on toteutettu Fastai-kirjastossa.
+Projektissa käytetään [AWD-LSTM-mallia][awd-lstm].
+Malli on koulutettu käyttäen Fastai-kirjastoa.
 Varsinaisessa mallissa on oletusasetusten mukaisesti 3 kerrosta, joissa on 1150, 1150 ja 400 LSTM-solua.
 
 [awd-lstm]: https://arxiv.org/pdf/1708.02182.pdf
 
-### Valmiiksi koulutettu malli
+## TransformerXL-malli
 
-* [lstm2.pth][lstm2] – Koulutettu suomenkielisellä Wikipedialla (696 Mt), suomalaisilla eroottisilla novelleilla (103 Mt) ja Gutenberg-projektin suomenkielisillä teoksilla (464 Mt).
+AWD-LSTM-mallin lisäksi koulutin [TransformerXL-mallin][transformerxl].
+Malli on myös koulutettu Fastai-kirjastolla ja käyttää sen oletusasetuksia.
+
+[transformerxl]: https://arxiv.org/pdf/1901.02860.pdf
+
+### Valmiiksi koulutetut mallit
+
+Mallit on koulutettu suomenkielisellä Wikipedialla (696 Mt), suomalaisilla eroottisilla novelleilla (103 Mt) ja Gutenberg-projektin suomenkielisillä teoksilla (464 Mt).
+
+* [lstm2.pth][lstm2] – AWD-LSTM-malli
+* [txl1.pth][txl1] – TransformerXL-malli
 
 [lstm2]: http://iikkahau.users.cs.helsinki.fi/mallit/lstm2.pth
+[txl1]: http://iikkahau.users.cs.helsinki.fi/mallit/txl1.pth
 
 ## Mallin kouluttaminen ja käyttäminen
 
