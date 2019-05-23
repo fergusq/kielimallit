@@ -105,11 +105,8 @@ my $app = sub (%env) {
 				for $text.lc.subst(/<-[\w\ ]>/, "").words.rotor(2 => -1).map(*.join: " ") -> $word-pair {
 					next without %origin{$word-pair};
 					my @matches = %origin{$word-pair}<>;
-					note @matches.elems;
-					if @matches.elems ≤ 5 {
-						@inspirations.append: @matches.map: {s!($word-pair)!<b> $0 </b>!;"<li> $_ </li>"};
-						CATCH { .note; .resume; }
-					}
+					@inspirations.append: "<li>" ~ @matches.pick.subst($word-pair, "<b> $word-pair </b>") ~ "</li>" if @matches;
+					CATCH { .note; .resume; }
 				}
 			}
 
