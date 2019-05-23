@@ -18,12 +18,15 @@ Mallit on koulutettu suomenkielisellä Wikipedialla (696 Mt), suomalaisilla eroo
 Mallien kouluttamiseen on käytetty [Fastai-kirjastoa][fastai] ja sen oletusasetuksia.
 
 * [lstm2.pth][lstm2] – Valmiiksi koulutettu [AWD-LSTM-malli][awd-lstm].
+* [tf1.pth][tf1] – Valmiiksi koulutettu [Transformer-malli][transformer].
 * [txl1.pth][txl1] – Valmiiksi koulutettu [TransformerXL-malli][transformerxl].
 
 [fastai]: https://docs.fast.ai/text.models.html
 [lstm2]: http://iikkahau.users.cs.helsinki.fi/mallit/lstm2.pth
+[tf1]: http://iikkahau.users.cs.helsinki.fi/mallit/tf1.pth
 [txl1]: http://iikkahau.users.cs.helsinki.fi/mallit/txl1.pth
 [awd-lstm]: https://arxiv.org/pdf/1708.02182.pdf
+[transformer]: https://arxiv.org/pdf/1706.03762.pdf
 [transformerxl]: https://arxiv.org/pdf/1901.02860.pdf
 
 ## Mallin kouluttaminen ja käyttäminen
