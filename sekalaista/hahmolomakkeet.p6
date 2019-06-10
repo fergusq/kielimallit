@@ -4,15 +4,20 @@ my constant \tmp-file = "/tmp/hahmolomakkeet.md";
 
 # Otteistaja
 
-my $sampler = run "python3", "sample-model.py", "iso-lc", "lstm2-pyhis", :in, :out;
-sub predict(Str $prompt, :$pred-only --> Str) {
-	$sampler.in.put: $prompt;
-	my $prediction = $sampler.out.get;
+enum SamplerType <LstmSampler TxlSampler>;
+
+my $lstm-sampler = run "python3", "sample-model.py", "iso-lc", "lstm2-pyhis", :in, :out;
+my $txl-sampler = run "python3", "sample-model.py", "iso-lc", "txl1-pyhis", "--transformerxl", :in, :out;
+
+sub predict(Str $prompt, :$pred-only, SamplerType :$sampler = LstmSampler --> Str) {
+	my $sampler-prog = $sampler ~~ LstmSampler ?? $lstm-sampler !! $txl-sampler;
+	$sampler-prog.in.put: $prompt;
+	my $prediction = $sampler-prog.out.get;
 	$prediction ~~ s/^ "> "//;
 	$prediction ~~ s:g/\x1b .*? m//;
 	$prediction .= substr($prompt.chars+1);
 	$prediction ~~ s/\. .*/./;
-	note "$prompt --> $prediction";
+	note "$sampler: $prompt --> $prediction";
 	$pred-only ?? $prediction !! "$prompt$prediction"
 }
 
@@ -40,7 +45,7 @@ class Var {
 my Var %vars;
 
 sub var(Str $name, &source, *@deps --> Var) {
-	%vars{$name} = Var.new(name => $name, source => &source, deps => @deps.map: {%vars{$_}})
+	%vars{$name} = Var.new(:$name, :&source, deps => @deps.map: {%vars{$_}})
 }
 
 sub get-val(Str $var --> Str) {
@@ -49,30 +54,34 @@ sub get-val(Str $var --> Str) {
 
 # Varsinainen ohjelma
 
-my Str @characters = <noora eero filip>;
+my Str @characters = <noora nooraa eero eeroa filip filipiä vladimir vladimiria>;
 my Str @relations = <rakastat ihailet vihaat kadehdit>;
+
+my @char-names = @characters.Hash.keys;
 
 # Muuttujat
 
-my Var $intro-v = var "intro", {predict "@characters[0..^*].join(Q/, /) ja @characters[*-1] ovat"};
+my Var $intro-v = var "intro", {predict "@char-names[0..^*].join(Q/, /) ja @char-names[*-1] ovat", sampler => TxlSampler};
 $intro-v.update;
 
-for @characters -> $char {
+for @characters -> $char, $char-part {
 	my Var $v = var $char, {predict "$char asui lapsena"};
 	$v.update;
 }
-for @characters -> $char {
-	note "Käsitellään hahmoa $char...";
-	for @characters -> $friend {
+for @characters -> $char, $char-part {
+	note "Käsitellään $char-part...";
+	for @characters -> $friend, $friend-part {
 		next if $char eq $friend;
 
-		my Var $v = var "$char -> $friend", {
-			my Str $desc = get-val $friend;
-			my Str $prompt-proper = "@relations.pick() häntä, sillä";
-			my Str $reason = predict "$desc $prompt-proper";
-			"$desc **$reason.substr($desc.chars+1)**"
-		}, $friend;
-		$v.update;
+		for ^3 {
+			my Var $v = var "$char -> $friend $_", {
+				my Str $desc = get-val $friend;
+				my Str $prompt-proper = "@relations.pick() $friend-part, sillä";
+				my Str $reason = predict "$desc $prompt-proper", sampler => TxlSampler;
+				"$desc **$reason.substr($desc.chars+1)**"
+			}, $friend;
+			$v.update;
+		}
 	}
 }
 
@@ -84,13 +93,16 @@ sub make-pdf() {
 	my $fh = open tmp-file, :w;
 
 	$fh.put: "---\ntitle: Hahmolomakkeet\nlang: fi-FI\n...\n\n{get-val Q/intro/}\n";
-	for @characters -> $char {
+	for @char-names -> $char {
 		$fh.put: "\n---\n\n# $char";
 		$fh.put: get-val $char;
-		for @characters -> $friend {
+		for @char-names -> $friend {
 			next if $char eq $friend;
 			$fh.put: "\n## Tuttu: $friend";
-			$fh.put: get-val "$char -> $friend";
+			for ^3 {
+				$fh.put: "\n### Vaihtoehto $_";
+				$fh.put: get-val "$char -> $friend $_";
+			}
 		}
 	}
 
@@ -114,5 +126,7 @@ loop {
 	}
 }
 
-$sampler.in.close;
-$sampler.out.close;
+for ($lstm-sampler, $txl-sampler) -> $sampler {
+	$sampler.in.close;
+	$sampler.out.close;
+}
