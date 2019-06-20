@@ -9,8 +9,10 @@ enum SamplerType <LstmSampler TxlSampler>;
 my $lstm-sampler = run "python3", "sample-model.py", "iso-lc", "lstm2-pyhis", :in, :out;
 my $txl-sampler = run "python3", "sample-model.py", "iso-lc", "txl1-pyhis", "--transformerxl", :in, :out;
 
+my %samplers = LstmSampler => $lstm-sampler, TxlSampler => $txl-sampler;
+
 sub predict(Str $prompt, :$pred-only, SamplerType :$sampler = LstmSampler --> Str) {
-	my $sampler-prog = $sampler ~~ LstmSampler ?? $lstm-sampler !! $txl-sampler;
+	my $sampler-prog = %samplers{$sampler};
 	$sampler-prog.in.put: $prompt;
 	my $prediction = $sampler-prog.out.get;
 	$prediction ~~ s/^ "> "//;
@@ -54,29 +56,35 @@ sub get-val(Str $var --> Str) {
 
 # Varsinainen ohjelma
 
-my Str @characters = <noora nooraa eero eeroa filip filipiä vladimir vladimiria>;
+my Str %char-parts = <noora nooraa eero eeroa filip filipiä vladimir vladimiria anna annaa katariina katariinaa>;
 my Str @relations = <rakastat ihailet vihaat kadehdit>;
 
-my @char-names = @characters.Hash.keys;
+my Str @characters = %char-parts.keys.pick: *;
+
+sub friends(Str $char) {
+	my $index = @characters.antipairs.Hash{$char};
+	my $offset = @characters.elems ÷ 2;
+	@characters[($index-1)%*], @characters[($index+1)%*], @characters[($index+$offset)%*]
+}
 
 # Muuttujat
 
-my Var $intro-v = var "intro", {predict "@char-names[0..^*].join(Q/, /) ja @char-names[*-1] ovat", sampler => TxlSampler};
+my Var $intro-v = var "intro", {predict "@characters[0..^*].join(Q/, /) ja @characters[*-1] ovat", sampler => TxlSampler};
 $intro-v.update;
 
-for @characters -> $char, $char-part {
+for @characters -> $char {
 	my Var $v = var $char, {predict "$char asui lapsena"};
 	$v.update;
 }
-for @characters -> $char, $char-part {
-	note "Käsitellään $char-part...";
-	for @characters -> $friend, $friend-part {
+for @characters -> $char {
+	note "Käsitellään %char-parts{$char}...";
+	for friends($char) -> $friend {
 		next if $char eq $friend;
 
 		for ^3 {
 			my Var $v = var "$char -> $friend $_", {
 				my Str $desc = get-val $friend;
-				my Str $prompt-proper = "@relations.pick() $friend-part, sillä";
+				my Str $prompt-proper = "@relations.pick() %char-parts{$friend}, sillä";
 				my Str $reason = predict "$desc $prompt-proper", sampler => TxlSampler;
 				"$desc **$reason.substr($desc.chars+1)**"
 			}, $friend;
@@ -93,10 +101,10 @@ sub make-pdf() {
 	my $fh = open tmp-file, :w;
 
 	$fh.put: "---\ntitle: Hahmolomakkeet\nlang: fi-FI\n...\n\n{get-val Q/intro/}\n";
-	for @char-names -> $char {
+	for @characters -> $char {
 		$fh.put: "\n---\n\n# $char";
 		$fh.put: get-val $char;
-		for @char-names -> $friend {
+		for friends($char) -> $friend {
 			next if $char eq $friend;
 			$fh.put: "\n## Tuttu: $friend";
 			for ^3 {
@@ -126,7 +134,7 @@ loop {
 	}
 }
 
-for ($lstm-sampler, $txl-sampler) -> $sampler {
+for %samplers.values -> $sampler {
 	$sampler.in.close;
 	$sampler.out.close;
 }
