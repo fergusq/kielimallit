@@ -1,4 +1,3 @@
-import fire
 import fastai as fa
 import fastai.text as fatext
 import numpy as np
@@ -22,10 +21,11 @@ def pred_batch(learner, xb):
 	return F.softmax(a[0].detach().cpu(), dim=-1), a[1]
 
 def predict(vocab, learner, tokens:List[str], n_words:int=1, temperature:float=1., min_p:float=None,
-            excluded_tokens:List[str]=[],
+            excluded_tokens:List[str]=["<unk>"],
             promoted_tokens:List[str]=[],
             interactive=False,
-            track=""):
+            track="",
+            repetition_penalty=False):
 	"Return the `n_words` that come after `tokens`."
 	learner.model.reset()
 	# generoidaan väritystilassa todennäköisyydet myös kehotteelle, joten ei syötetä kehotetta mallille alussa
@@ -36,6 +36,7 @@ def predict(vocab, learner, tokens:List[str], n_words:int=1, temperature:float=1
 	else:
 		xb = torch.tensor([vocab.numericalize(tokens or [""])])
 		output = []
+	history = []
 	for i_x in range(len(output) + n_words):
 		# -n-tilassa lasketaan lauseupotuksen arvot (en uskalla käyttää tätä muulloin, pitäisi kyllä)
 		if track and track.startswith("-n"):
@@ -50,6 +51,10 @@ def predict(vocab, learner, tokens:List[str], n_words:int=1, temperature:float=1
 			res[learner.data.vocab.stoi[token]] = 0.
 		for token in promoted_tokens:
 			res[learner.data.vocab.stoi[token]] *= 10.
+		
+		if repetition_penalty:
+			for i, token_id in enumerate(reversed(history)):
+				res[token_id] *= 1.0-0.7*2**(-i*.1);
 		
 		if min_p is not None: 
 			if (res >= min_p).float().sum() == 0:
@@ -77,6 +82,7 @@ def predict(vocab, learner, tokens:List[str], n_words:int=1, temperature:float=1
 			idx = torch.multinomial(res, 1).item()
 		
 		token = learner.data.vocab.itos[idx]
+		history.append(idx)
 		
 		# lisätään tarvittaessa väritys sanakkeeseen
 		if track and track[:2] not in ["-n", "-p"] and track in learner.data.vocab.stoi:
@@ -136,6 +142,7 @@ def main(vocab_prefix, model_file, n=0, en=False, prompt="", heatmaps=False, tra
 			"excl": [lambda s: s.split(" "), ["<unk>"]],
 			"promo": [lambda s: s.split(" "), []],
 			"interactive": [lambda s: (False if s.lower() in ["", "0", "false", "f"] else True), False],
+			"repetition_penalty": [lambda s: (False if s.lower() in ["", "0", "false", "f"] else True), False],
 			"color": [str, ""]
 	}
 	if n:
@@ -168,6 +175,7 @@ def main(vocab_prefix, model_file, n=0, en=False, prompt="", heatmaps=False, tra
 					excluded_tokens=params["excl"][1],
 					promoted_tokens=params["promo"][1],
 					interactive=params["interactive"][1],
+					repetition_penalty=params["repetition_penalty"][1],
 					track=params["color"][1])
 			
 			out = ""
@@ -179,4 +187,5 @@ def main(vocab_prefix, model_file, n=0, en=False, prompt="", heatmaps=False, tra
 			print(out + "\x1b[0m")
 
 if __name__ == "__main__":
+	import fire
 	fire.Fire(main)
