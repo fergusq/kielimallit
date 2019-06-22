@@ -17,6 +17,24 @@ def initModel(vocab_prefix, model_file, transformerxl=False):
 	learner.load(model_file)
 	return vocab, spm, learner
 
+def createApp(models):
+	app = Flask(__name__)
+
+	@app.route("/predict/<model_name>", methods=["GET", "POST"])
+	def predict(model_name) -> Response:
+		vocab, spm, learner = models[model_name]
+		params = request.args if request.method == "GET" else request.form
+		n = int(params.get("n", "100"))
+		temperature = float(params.get("temp", "0.7"))
+		prompt = params.get("prompt", "")
+		tokens = spm.EncodeAsPieces(prompt)
+		prediction = sample.predict(vocab, learner, tokens, n, temperature=temperature, repetition_penalty=True)
+		res = make_response(jsonify({"prompt": prompt, "prediction": "".join(prediction).replace("▁", " ").strip()}))
+		res.headers["Access-Control-Allow-Origin"] = "*"
+		return res
+	
+	return app
+
 def main():
 	parser = argparse.ArgumentParser()
 	parser.add_argument("port")
@@ -27,19 +45,7 @@ def main():
 
 	vocab, spm, learner = initModel(args.vocab_prefix, args.model_file, args.transformerxl)
 
-	app = Flask(__name__)
-
-	@app.route("/predict", methods=["GET", "POST"])
-	def predict() -> Response:
-		params = request.args if request.method == "GET" else request.form
-		n = int(params.get("n", "100"))
-		temperature = float(params.get("temp", "0.7"))
-		prompt = params.get("prompt", "")
-		tokens = spm.EncodeAsPieces(prompt)
-		prediction = sample.predict(vocab, learner, tokens, n, temperature=temperature, repetition_penalty=True)
-		res = make_response(jsonify({"prompt": prompt, "prediction": "".join(prediction).replace("▁", " ").strip()}))
-		res.headers["Access-Control-Allow-Origin"] = "*"
-		return res
+	app = createApp({args.model_file: (vocab, spm, learner)})
 
 	app.run(port=args.port)
 
