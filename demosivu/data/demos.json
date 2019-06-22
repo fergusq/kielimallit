@@ -1,0 +1,21 @@
+[
+	{
+		"name": "gradut",
+		"title": "Gradugeneraattori",
+		"button": "Generoi tiivistelmä.",
+		"model": "txl1-gradut"
+	},
+	{
+		"name": "rsuomi",
+		"title": "r/suomi-generaattori",
+		"button": "Generoi tajunnanvirtaa.",
+		"model": "txl1-rsuomi"
+	},
+	{
+		"name": "vaalikone",
+		"title": "Vaalikonevastausgeneraattori",
+		"button": "Generoi kannanotto.",
+		"model": "txl1-vaalidata",
+		"templatefile": "demos/vaalidata.plan"
+	}
+]

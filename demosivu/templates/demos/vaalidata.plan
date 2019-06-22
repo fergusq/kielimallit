@@ -1,0 +1,145 @@
+| block additional_head |
+	<script>
+		const model = "|self.model|";
+	</script>
+	<script type="text/javascript" src="libvoikko.js"></script>
+	<script type="text/javascript" src="puppu.js"></script>
+	<link rel="stylesheet" href="puppu.css" type="text/css"/>
+	<style>
+	h2 {text-align: center;font-size: 1.2rem;}
+	th, td {width: 6em;text-align: center;}
+	.sel, .oth {font-size: 3rem;font-family: serif;}
+	.desc, .text {width: 100%;}
+	.desc {padding: 1em;text-align: center;font-weight: bold;}
+	.text {border: 1px solid gray;border-radius: 1em;padding:1em;}
+	table {margin-left: auto; margin-right: auto;}
+	#select-question {max-width: 30vw}
+	</style>
+| end |
+
+| block content |
+	<div class="generator">
+		<h1>|self.title|</h1>
+		<div id="settings">
+			<fieldset>
+				<legend>Asetukset</legend>
+				<label>
+					Kysymys:
+					<select id="select-question">
+						<option value="2">Suomen pitää olla edelläkävijä ilmastonmuutoksen vastaisessa taistelussa, vaikka se aiheuttaisi suomalaisille kustannuksia.</option>
+						<option value="3">Suomen ei pidä kiirehtiä kieltämään uusien bensa- ja dieselautojen myyntiä.</option>
+						<option value="4">Valtion pitää ohjata suomalaiset syömään vähemmän lihaa esimerkiksi verotuksen avulla.</option>
+						<option value="5">Metsiä hakataan Suomessa liikaa.</option>
+						<option value="6">Kun valtion menoja ja tuloja tasapainotetaan, se on tehtävä mieluummin menoja karsimalla kuin veroja kiristämällä.</option>
+						<option value="7">Sosiaaliturvaa tulee kehittää niin, että osa nykyisistä tuista korvataan kaikille työikäisille maksettavalla, vastikkeettomalla perustulolla.</option>
+						<option value="8">Euron ulkopuolella Suomi pärjäisi paremmin.</option>
+						<option value="9">Sosiaali- ja terveyspalvelut on tuotettava ensisijaisesti julkisina palveluina.</option>
+						<option value="10">Vanhustenhoidon ulkoistamista yksityisille toimijoille tulee lisätä.</option>
+						<option value="11">Parantumattomasti sairaalla on oltava oikeus eutanasiaan.</option>
+						<option value="12">Sukupuolen korjaamisen tulee olla mahdollista myös alle 18-vuotiaille.</option>
+						<option value="13">Viinit ja vahvat oluet pitää saada ruokakauppoihin.</option>
+						<option value="14">Energiajuomien myyminen alle 15-vuotiaille on kiellettävä.</option>
+						<option value="15">Nuuskan, purutupakan ja nenänuuskan matkustajatuonnin raja lasketaan 1000 grammasta 100 grammaan vuorokaudessa.</option>
+						<option value="16">Perhevapaita pitää uudistaa niin, että vapaat jakautuvat tasan vanhempien kesken.</option>
+						<option value="17">Oppivelvollisuus pitää ulottaa myös ammatilliseen koulutukseen ja lukioon.</option>
+						<option value="18">Koulujen kesälomia tulee siirtää kahdella viikolla niin, että ne alkavat kesäkuun puolivälissä ja päättyvät elokuun lopulla.</option>
+						<option value="19">Korkeakoulujen määrää pitää vähentää ja vapautuneet voimavarat käyttää huippuopetukseen ja -tutkimukseen.</option>
+						<option value="20">Maahanmuuttajien määrän kasvu on lisännyt turvattomuutta Suomessa.</option>
+						<option value="21">Sosiaali- ja terveyspalveluiden rahoittaminen vaatii työperäisen maahanmuuton merkittävää lisäämistä.</option>
+						<option value="22">Nato-jäsenyys vahvistaisi Suomen turvallisuuspoliittista asemaa.</option>
+						<option value="23">Vihapuhe tulee määritellä ja asettaa rangaistavaksi rikoslaissa.</option>
+						<option value="24">Perinteiset arvot ovat hyvän elämän perusta.</option>
+						<option value="25">Suomessa tarvitaan nyt koviakin keinoja järjestyksen ja tavallisten ihmisten puolustamiseksi.</option>
+						<option value="26">On oikein, että yhteiskunnassa jotkut ryhmät ovat paremmassa asemassa kuin toiset.</option>
+						<option value="27">Suomen lakien pitäisi nykyistä vapaammin antaa ihmisten tehdä omat ratkaisunsa ja kantaa niiden seuraukset.</option>
+						<option value="28">Poliitikon velvollisuus on ennen kaikkea ajaa omien äänestäjiensä etuja.</option>
+						<option value="29">On olemassa pyhiä tai muuten yksilöä suurempia asioita, joita täytyy puolustaa silloinkin, kun se vaatii omien etujen uhraamista.</option>
+						<option value="30">On oikein nähdä vaivaa sen eteen, ettei vahingossakaan loukkaa toista.</option>
+						<option value="52">Uusimaa. Kaatolupia on myönnettävä nykyistä enemmän susikannan rajoittamiseksi.</option>
+						<option value="53">Uusimaa. Loviisan ydinvoimalalle pitää myöntää jatkolupa vuoden 2030 jälkeenkin.</option>
+						<option value="54">Uusimaa. Uudellemaalle pitää perustaa lisää osaamiskeskuksia, joissa maahanmuuttajat opiskelevat itselleen nopeasti ammatin ja oppivat kielen.</option>
+						<option value="55">Uusimaa. Dragsvikin varuskunta pitää muuttaa kaksikieliseksi.</option>
+						<option value="56">Uusimaa. Metro tulee jatkaa Helsingistä Sipooseen.</option>
+						<option value="57">Helsinki. Kun Helsinki sulkee hiilivoimaloita, voidaan korvaavaa energiaa tuottaa ydinvoimalla.</option>
+						<option value="58">Helsinki. Viranhaltijoiden kaksikielisyysvaatimuksia pitää lieventää, jotta maahanmuuttajien työllistyminen helpottuu.</option>
+						<option value="59">Helsinki. Puolustusvoimien tulee luopua Santahaminan varuskuntasaaresta, jotta sinne voi rakentaa asuntoja.</option>
+						<option value="60">Helsinki. Helsingin seudulla pitää ottaa käyttöön ruuhkamaksut.</option>
+						<option value="61">Helsinki. Metro tulee jatkaa Helsingistä Sipooseen.</option>
+						<option value="62">Varsinais-Suomi. Kaatolupia on myönnettävä nykyistä enemmän susi-, merimetso- ja hyljekantojen rajoittamiseksi.</option>
+						<option value="63">Varsinais-Suomi. Tehokkain tapa vauhdittaa Varsinais-Suomen talouskasvua on myöntää Turun yliopistolle lupa perustaa teknillinen tiedekunta.</option>
+						<option value="64">Varsinais-Suomi. Suomen on turvallisuustilanteen vuoksi kiristettävä ehtoja, joilla EU:n ulkopuolisten maiden kansalaiset saavat ostaa tontteja Saaristomereltä.</option>
+						<option value="65">Varsinais-Suomi. Valtion on panostettava mieluummin tunnin junaan Turusta Helsinkiin kuin kasitien parantamiseen.</option>
+						<option value="66">Varsinais-Suomi. Saariston yhteysalusliikenteen jatkuvuuden turvaamiseksi liikenteen tulisi olla maksullista kesäasukkaille ja matkailijoille.</option>
+						<option value="67">Satakunta. Satakuntaan tulisi rakentaa runsaasti lisää tuulivoimaloita.</option>
+						<option value="68">Satakunta. Satakuntaan tulee myöntää entistä enemmän kaatolupia susikannan olennaiseksi pienentämiseksi.</option>
+						<option value="69">Satakunta. Olkiluoto 4:n rakentaminen olisi valtava myönteinen ilmastoteko.</option>
+						<option value="70">Satakunta. Satakunnan erikoissairaanhoito on keskitettävä kokonaisuudessaan Poriin.</option>
+						<option value="71">Satakunta. Porin lentokentän henkilöliikenteen tukeminen olisi rahan haaskausta.</option>
+						<option value="72">Ahvenanmaa. llmastonmuutoksen hillitsemiseen tähtäävät toimet eivät saa vaikeuttaa Ahvenanmaan talouskasvua.</option>
+						<option value="73">Ahvenanmaa. Ahvenanmaan erivapauksia on rajoitettava.</option>
+						<option value="74">Ahvenanmaa. Ahvenanmaalaisten verotuskäytännöt on tehtävä yhtenäiseksi manner-Suomen kanssa.</option>
+						<option value="75">Ahvenanmaa. Suomen kielen asemaa Ahvenanmaalla tulisi parantaa.</option>
+						<option value="76">Ahvenanmaa. Ahvenanmaan demilitarisointi tulisi ottaa uudelleen pohdintaan Itämerellä kasvaneen sotilaallisen aktiivisuuden vuoksi.</option>
+						<option value="77">Häme. Hämeeseen ei saa avata yhtään uutta kaivosta ennen kuin yhtiöiltä aletaan periä kaivosveroa.</option>
+						<option value="78">Häme. Hämeeseen tulisi rakentaa runsaasti lisää tuulivoimaloita.</option>
+						<option value="79">Häme. Suomen pitää hakea järjestettäväkseen talviolympiakisoja, joissa Lahti olisi yhtenä isäntäkaupunkina.</option>
+						<option value="80">Häme. Pääradan kehittäminen on tärkeämpää kuin junayhteyksien parantaminen Lahden ja lentokentän välillä.</option>
+						<option value="81">Häme. Tietulleja voidaan kerätä Hämeen teiden kunnossapidon parantamiseksi.</option>
+						<option value="82">Pirkanmaa. Tampereen ei pidä enää antaa täyttää järvien rantoja rakentamista varten.</option>
+						<option value="83">Pirkanmaa. Valtion pitää osallistua Oriveden kultakaivokselta löytyneen kaatopaikan puhdistamisen kustannuksiin.</option>
+						<option value="84">Pirkanmaa. Raitiotien rakentamiseen Tampereen lähikuntiin on varattava suunnittelurahaa jo tulevalla vaalikaudella.</option>
+						<option value="85">Pirkanmaa. Tampereen rantaväylän ruuhkien helpottaminen on tärkeämpää kuin joukkoliikenteen kehittäminen.</option>
+						<option value="86">Pirkanmaa. Helsinki-Tampere-junayhteyttä on parannettava niin, että juna kulkee kaupunkien välin vain tunnissa.</option>
+						<option value="87">Kaakkois-Suomi. Saimaan luontoarvoista voidaan tinkiä, jotta kaivosteollisuuteen syntyisi uusia työpaikkoja.</option>
+						<option value="88">Kaakkois-Suomi. Lentoliikenteeseen tulee panostaa Kaakkois-Suomessa ilmastonmuutoksesta huolimatta.</option>
+						<option value="89">Kaakkois-Suomi. Kaakkois-Suomeen riittää yksi ammattikorkeakoulu ja yksi yliopisto.</option>
+						<option value="90">Kaakkois-Suomi. Helsingistä Kouvolaan on rakennettava oikorata eli niin sanottu itärata.</option>
+						<option value="91">Kaakkois-Suomi. Parikkalan rajanylityspaikka tulee avata kansainväliselle liikenteelle.</option>
+						<option value="92">Savo-Karjala. Jos koululaisen koulumatkan pituus on yli tunnin suuntaansa, on yhtenä päivänä viikossa oltava mahdollisuus etäkoulunkäyntiin.</option>
+						<option value="93">Savo-Karjala. Suomen pitää edistää viisumivapautta Venäjän ja Suomen välillä.</option>
+						<option value="94">Savo-Karjala. Pohjois-Karjalan prikaati tulee perustaa uudelleen.</option>
+						<option value="95">Savo-Karjala. Nykyistä nopeamman junayhteyden rakentaminen Joensuusta ja Kuopiosta Helsinkiin on alueen tärkein liikennehanke.</option>
+						<option value="96">Savo-Karjala. Raitiotieliikenne on realistinen tapa parantaa julkista liikennettä Itä-Suomessa.</option>
+						<option value="97">Vaasa. Kaatolupia on myönnettävä nykyistä enemmän susi-, merimetso- ja hyljekantojen rajoittamiseksi.</option>
+						<option value="98">Vaasa. Turpeen energiakäytöstä tulee luopua.</option>
+						<option value="99">Vaasa. Turkistarhaus pitäisi kieltää lailla.</option>
+						<option value="100">Vaasa. Vaasan keskussairaalan pitäisi olla laajan päivystyksen sairaala.</option>
+						<option value="101">Vaasa. Maahanmuuttoa pitää lisätä, jotta maakuntien reunakunnissakin riittäisi asukkaita ja työvoimaa.</option>
+						<option value="102">Keski-Suomi. Jyväskylän kaupunginteatterin ja museoiden kunnostamiseen on seuraavalla hallituskaudella ohjattava merkittäviä valtionavustuksia.</option>
+						<option value="103">Keski-Suomi. Sosiaali- ja terveyspalveluiden järjestäminen on keskitettävä Keski-Suomessa yhteisen hallinnon alle, vaikkei sote- ja maakuntauudistus toteutuisikaan.</option>
+						<option value="104">Keski-Suomi. Jyväskylän yliopisto ja ammattikorkeakoulu on järkevintä yhdistää saman hallinnon alle.</option>
+						<option value="105">Keski-Suomi. Valtion tierahoitusta on tulevalla vaalikaudella Keski-Suomessa kohdennettava valtateiden parantamiseen, erityisesti nelostiehen.</option>
+						<option value="106">Keski-Suomi. Jyväskylän on saatava nykyistä enemmän valtiontukea joukkoliikenteensä järjestämiseen.</option>
+						<option value="107">Oulun vaalipiiri. Valtion pitää vähentää selvästi omistusosuuttaan Sotkamon Talvivaarassa kaivostoimintaa harjoittavasta Terrafame-yhtiöstä.</option>
+						<option value="108">Oulun vaalipiiri. Pohjois-Pohjanmaalle ja Kainuuseen ei saa avata yhtään uutta kaivosta ennen kuin yhtiöiltä aletaan periä kaivosveroa.</option>
+						<option value="109">Oulun vaalipiiri. Erikoissairaanhoitoa tulee keskittää entistä voimakkaammin (yliopistollisiin) keskussairaaloihin.</option>
+						<option value="110">Oulun vaalipiiri. Liian suuri osa kaupallisesta marjanpoiminnasta on nyt ulkomaalaisten poimijoiden varassa.</option>
+						<option value="111">Oulun vaalipiiri. Oulusta on tällä vuosikymmenellä tullut entistä turvattomampi paikka elää.</option>
+						<option value="112">Lappi. Lappiin ei saa avata yhtään uutta kaivosta ennen kuin yhtiöiltä aletaan periä kaivosveroa.</option>
+						<option value="113">Lappi. Mahdollisen uuden maakuntahallinnon toimintoja ja työpaikkoja on sijoitettava muuallekin kuin Rovaniemelle.</option>
+						<option value="114">Lappi. Lapin erikoissairaanhoito on keskitettävä kokonaan Rovaniemelle Lapin keskussairaalaan.</option>
+						<option value="115">Lappi. Alkuperäiskansojen oikeuksia koskeva ILO-sopimus pitää ratifioida seuraavalla hallituskaudella.</option>
+						<option value="116">Lappi. Jäämeren rata pitää rakentaa.</option>
+					</select>
+				</label>
+			</fieldset>
+		</div>
+		<button id="gen-button" onclick="generateElectionData()">|self.button|</button>
+		<div class="content">
+			<div id="loading" style="display: none;">
+				<progress id="progress"></progress>
+			</div>
+			<div id="generated-text-container" style="display: none;">
+				<h2 id="question"></h2>
+				<table>
+				<tr><th>Täysin eri mieltä</th><th></th><th>En osaa sanoa</th><th></th><th>Täysin samaa mieltä</th></tr>
+				<tr id="num"></tr>
+				<tr><td class=desc colspan=5>Perustelut:</td></tr>
+				<tr><td class=text colspan=5 id="generated-text"></td></tr>
+				</table>
+			</div>
+		</div>
+	</div>
+| end |
+
+| include "templates/_page.plan" |

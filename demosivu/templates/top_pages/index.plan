@@ -1,0 +1,6 @@
+| block content |
+	<h1>Puppugeneraattorit</h1>
+	<p>Tämä sivu sisältää suomenkielisiä puppugeneraattoridemoja.</p>
+| end |
+
+| include "templates/_page.plan" |

@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8"/>
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<title>|self.title|</title>
+		<link rel="stylesheet" href="|root|style.css" type="text/css"/>
+		| ifdef additional_head additional_head end |
+	</head>
+	<body>
+		<nav class="menu">
+			<span class="menu-heading">Päävalikko</span>
+			<ul>
+				| for page in top_pages |
+					<li | if page.name eq self.name | class="selected" | end |>
+						<a href="|root page.path|">|page.title|</a>
+					</li>
+				| end |
+			</ul>
+			<span class="menu-heading">Puppugeneraattorit</span>
+			<ul>
+				| for page in demos |
+					<li | if page.name eq self.name | class="selected" | end |>
+						<a href="|root page.path|">|page.title|</a>
+					</li>
+				| end |
+			</ul>
+		</nav>
+		<div class="content">
+			|content|
+		</div>
+	</body>
+</html>

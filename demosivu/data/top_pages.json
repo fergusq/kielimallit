@@ -1,0 +1,7 @@
+[
+	{
+		"name": "index",
+		"title": "Etusivu",
+		"templatefile": "top_pages/index.plan"
+	}
+]
