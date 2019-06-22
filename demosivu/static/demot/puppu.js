@@ -56,7 +56,7 @@ async function generateProGradu() {
 	document.getElementById("gen-button").disabled = false;
 }
 
-const colors = ["", "red", "orange", "black", "lightgreen", "darkgreen"];
+const colors = ["red", "orange", "black", "lightgreen", "darkgreen"];
 
 async function generateElectionData() {
 	const sq = document.getElementById("select-question");
@@ -76,7 +76,7 @@ async function generateElectionData() {
 	
 	document.getElementById("generated-text").innerText = fixCase(matches[3]);
 	
-	const num = parseInt(matches[2]);
+	const num = parseInt(matches[2])-1;
 	const circles = [0,0,0,0,0].map(_ => "<td><span class=oth>○</span></td>");
 	circles[num] = `<td><span class="sel" style="color: ${colors[num]}">●</span></td>`;
 	document.getElementById("num").innerHTML = circles.join("");
