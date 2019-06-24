@@ -1,6 +1,6 @@
 const libvoikko = Libvoikko();
 var voikko, interval, progress = 0;
-async function generateText(n, prompt) {
+async function generate(n, prompt) {
 	const timeEstimate = 40*n;
 	progress = 0;
 	interval = setInterval(() => {
@@ -44,13 +44,25 @@ String.prototype.capitalize = function() {
 	return this.replace(/(?:^|\s)\S/g, function(a) { return a.toUpperCase(); });
 };
 
-async function generateProGradu() {
+async function generateTextWithXXBOS() {
 	document.getElementById("gen-button").disabled = true;
 	const n = parseInt(document.getElementById("select-n").value);
 	const prompt = ("xxbos " + document.getElementById("prompt").value).trim().toLowerCase();
 	document.getElementById("generated-text").style.display = "none";
-	let text = await generateText(n, prompt);
+	let text = await generate(n, prompt);
 	text = fixCase(text.replace(/xxbos\s*/, "").replace(/\s+br\s+/g, "\n\n").replace(/xxbos.*/g, ""));
+	document.getElementById("generated-text").style.display = "block";
+	document.getElementById("generated-text").innerText = text;
+	document.getElementById("gen-button").disabled = false;
+}
+
+async function generateText() {
+	document.getElementById("gen-button").disabled = true;
+	const n = parseInt(document.getElementById("select-n").value);
+	const prompt = (document.getElementById("prompt").value).trim().toLowerCase();
+	document.getElementById("generated-text").style.display = "none";
+	let text = await generate(n, prompt);
+	text = fixCase(text);
 	document.getElementById("generated-text").style.display = "block";
 	document.getElementById("generated-text").innerText = text;
 	document.getElementById("gen-button").disabled = false;
@@ -69,7 +81,7 @@ async function generateElectionData() {
 	
 	document.getElementById("generated-text-container").style.display = "none";
 	
-	const text = await generateText(n, prompt);
+	const text = await generate(n, prompt);
 	const matches = text.match(/kysymys (\d+), vastaus ([1-5]), perustelu: ([^/]*)(\/|$)/);
 	
 	document.getElementById("generated-text-container").style.display = "block";

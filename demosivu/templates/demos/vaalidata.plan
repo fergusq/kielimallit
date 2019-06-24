@@ -55,7 +55,7 @@
 						<option value="28">Poliitikon velvollisuus on ennen kaikkea ajaa omien äänestäjiensä etuja.</option>
 						<option value="29">On olemassa pyhiä tai muuten yksilöä suurempia asioita, joita täytyy puolustaa silloinkin, kun se vaatii omien etujen uhraamista.</option>
 						<option value="30">On oikein nähdä vaivaa sen eteen, ettei vahingossakaan loukkaa toista.</option>
-						<option value="52">Uusimaa. Kaatolupia on myönnettävä nykyistä enemmän susikannan rajoittamiseksi.</option>
+						<!--<option value="52">Uusimaa. Kaatolupia on myönnettävä nykyistä enemmän susikannan rajoittamiseksi.</option>
 						<option value="53">Uusimaa. Loviisan ydinvoimalalle pitää myöntää jatkolupa vuoden 2030 jälkeenkin.</option>
 						<option value="54">Uusimaa. Uudellemaalle pitää perustaa lisää osaamiskeskuksia, joissa maahanmuuttajat opiskelevat itselleen nopeasti ammatin ja oppivat kielen.</option>
 						<option value="55">Uusimaa. Dragsvikin varuskunta pitää muuttaa kaksikieliseksi.</option>
@@ -119,7 +119,7 @@
 						<option value="113">Lappi. Mahdollisen uuden maakuntahallinnon toimintoja ja työpaikkoja on sijoitettava muuallekin kuin Rovaniemelle.</option>
 						<option value="114">Lappi. Lapin erikoissairaanhoito on keskitettävä kokonaan Rovaniemelle Lapin keskussairaalaan.</option>
 						<option value="115">Lappi. Alkuperäiskansojen oikeuksia koskeva ILO-sopimus pitää ratifioida seuraavalla hallituskaudella.</option>
-						<option value="116">Lappi. Jäämeren rata pitää rakentaa.</option>
+						<option value="116">Lappi. Jäämeren rata pitää rakentaa.</option>-->
 					</select>
 				</label>
 			</fieldset>
@@ -140,6 +140,14 @@
 			</div>
 		</div>
 	</div>
+	<footer class="generator-footer">
+		| for para in self.desc |
+			<p>|para|</p>
+		| end |
+		| ifdef self.link |
+			<a href="|self.link|">|self.link|</a>
+		| end |
+	</footer>
 | end |
 
 | include "templates/_page.plan" |

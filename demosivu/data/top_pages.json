@@ -1,7 +1,8 @@
 [
 	{
 		"name": "index",
-		"title": "Etusivu",
-		"templatefile": "top_pages/index.plan"
+		"title": "Tietoa sivusta",
+		"templatefile": "top_pages/index.plan",
+		"group": "public"
 	}
 ]

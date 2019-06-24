@@ -2,7 +2,7 @@
 	<script>
 		const model = "|self.model|";
 		window.onload = function() {
-			document.getElementById("select-n").value = 400;
+			document.getElementById("select-n").value = |self.defaultN|;
 			document.getElementById("prompt").value = "";
 		}
 	</script>
@@ -32,7 +32,7 @@
 				</label>
 			</fieldset>
 		</div>
-		<button id="gen-button" onclick="generateProGradu()">|self.button|</button>
+		<button id="gen-button" onclick="|self.generator|()">|self.button|</button>
 		<div class="content">
 			<div id="loading" style="display: none;">
 				<progress id="progress"></progress>
@@ -42,6 +42,11 @@
 			</div>
 		</div>
 	</div>
+	<footer class="generator-footer">
+		| for para in self.desc |
+			<p>|para|</p>
+		| end |
+	</footer>
 | end |
 
 | include "templates/_page.plan" |

@@ -1,3 +1,9 @@
+| block link |
+	<li | if page.name eq self.name | class="selected" | end |>
+		<a href="|root page.path|">|page.title|</a>
+	</li>
+| end |
+
 <!DOCTYPE html>
 <html>
 	<head>
@@ -11,19 +17,24 @@
 		<nav class="menu">
 			<span class="menu-heading">Päävalikko</span>
 			<ul>
-				| for page in top_pages |
-					<li | if page.name eq self.name | class="selected" | end |>
-						<a href="|root page.path|">|page.title|</a>
-					</li>
-				| end |
+				| for page in top_pages
+				| 	if page.group eq self.group
+				| 		link
+				| 	end
+				| 	ifn page.group eq self.group
+				|		if page.group eq "public"
+				| 			link
+				|		end
+				| 	end
+				| end
 			</ul>
 			<span class="menu-heading">Puppugeneraattorit</span>
 			<ul>
-				| for page in demos |
-					<li | if page.name eq self.name | class="selected" | end |>
-						<a href="|root page.path|">|page.title|</a>
-					</li>
-				| end |
+				| for page in demos
+				| 	if page.group eq self.group
+				| 		link
+				| 	end
+				| end
 			</ul>
 		</nav>
 		<div class="content">
