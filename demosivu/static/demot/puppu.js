@@ -13,7 +13,7 @@ async function generate(n, prompt) {
 		progress++;
 	}, 100);
 	document.getElementById("loading").style.display = "block";
-	const response = await fetch("https://puppu.kaivos.org/predict/" + model + "?n=" + n + "&prompt=" + encodeURIComponent(prompt));
+	const response = await fetch("https://puppu.kaivos.org/predict/" + model + "?annotate=1&n=" + n + "&prompt=" + encodeURIComponent(prompt));
 	const data = await response.json();
 	document.getElementById("loading").style.display = "none";
 	clearInterval(interval);
@@ -26,15 +26,22 @@ function fixCase(text) {
 	}
 	let ans = "";
 	let capitalize = true;
+	let insideTag = false;
 	for (const token of voikko.tokens(text)) {
+		if (token.text == "<") {
+			insideTag = true;
+		}
 		let cap = capitalize;
 		if (token.type === "WORD") {
 			const a = voikko.analyze(token.text);
 			cap |= a.length && a.every(alt => alt.BASEFORM && alt.BASEFORM.toLowerCase() !== alt.BASEFORM);
 		}
 		ans += cap ? token.text.capitalize() : token.text;
-		if (token.type !== "WHITESPACE") {
+		if (!insideTag && token.type !== "WHITESPACE") {
 			capitalize = [".", "?", "!"].includes(token.text);
+		}
+		if (token.text == ">") {
+			insideTag = false;
 		}
 	}
 	return ans;
@@ -52,7 +59,7 @@ async function generateTextWithXXBOS() {
 	let text = await generate(n, prompt);
 	text = fixCase(text.replace(/xxbos\s*/, "").replace(/\s+br\s+/g, "\n\n").replace(/xxbos.*/g, ""));
 	document.getElementById("generated-text").style.display = "block";
-	document.getElementById("generated-text").innerText = text;
+	document.getElementById("generated-text").innerHTML = text;
 	document.getElementById("gen-button").disabled = false;
 }
 
@@ -64,7 +71,7 @@ async function generateText() {
 	let text = await generate(n, prompt);
 	text = fixCase(text);
 	document.getElementById("generated-text").style.display = "block";
-	document.getElementById("generated-text").innerText = text;
+	document.getElementById("generated-text").innerHTML = text;
 	document.getElementById("gen-button").disabled = false;
 }
 
@@ -82,11 +89,11 @@ async function generateElectionData() {
 	document.getElementById("generated-text-container").style.display = "none";
 	
 	const text = await generate(n, prompt);
-	const matches = text.match(/kysymys (\d+), vastaus ([1-5]), perustelu: ([^/]*)(\/|$)/);
+	const matches = text.match(/kysymys (\d+), vastaus ([1-5]), <copy>perustelu<\/copy>: ([^/]*)([^<]\/|$)/);
 	
 	document.getElementById("generated-text-container").style.display = "block";
 	
-	document.getElementById("generated-text").innerText = fixCase(matches[3]);
+	document.getElementById("generated-text").innerHTML = fixCase(matches[3]);
 	
 	const num = parseInt(matches[2])-1;
 	const circles = [0,0,0,0,0].map(_ => "<td><span class=oth>○</span></td>");
