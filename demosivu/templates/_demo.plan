@@ -1,0 +1,52 @@
+| block additional_head |
+	<script>
+		const model = "|self.model|";
+		window.onload = function() {
+			document.getElementById("select-n").value = |self.defaultN|;
+			document.getElementById("prompt").value = "";
+		}
+	</script>
+	<script type="text/javascript" src="libvoikko.js"></script>
+	<script type="text/javascript" src="puppu.js"></script>
+	<link rel="stylesheet" href="puppu.css" type="text/css"/>
+| end |
+
+| block content |
+	<div class="generator">
+		<h1>|self.title|</h1>
+		<button id="show-settings" class="small-button" onclick="showSettings()">Asetukset</button>
+		<div id="settings" style="display: none;">
+			<fieldset>
+				<legend>Asetukset <button class="small-button" onclick="closeSettings()">Sulje</button></legend>
+				<label>
+					Pituus:
+					<select id="select-n">
+						<option value="100">Lyhyt</option>
+						<option value="200">Keskipitkä</option>
+						<option value="400" selected>Pitkä</option>
+					</select>
+				</label>
+				<label>
+					Kehote:
+					<input id="prompt" type="text" />
+				</label>
+			</fieldset>
+		</div>
+		<button id="gen-button" onclick="|self.generator|()">|self.button|</button>
+		<div class="content">
+			<div id="loading" style="display: none;">
+				<progress id="progress"></progress>
+			</div>
+			<div id="generated-text" style="display: none;">
+		
+			</div>
+		</div>
+	</div>
+	<footer class="generator-footer">
+		| for para in self.desc |
+			<p>|para|</p>
+		| end |
+	</footer>
+| end |
+
+| include "templates/_page.plan" |

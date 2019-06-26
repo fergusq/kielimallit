@@ -1,0 +1,44 @@
+| block link |
+	<li | if page.name eq self.name | class="selected" | end |>
+		<a href="|root page.path|">|page.title|</a>
+	</li>
+| end |
+
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8"/>
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<title>|self.title|</title>
+		<link rel="stylesheet" href="|root|style.css" type="text/css"/>
+		| ifdef additional_head additional_head end |
+	</head>
+	<body>
+		<nav class="menu">
+			<span class="menu-heading">Päävalikko</span>
+			<ul>
+				| for page in top_pages
+				| 	if page.group eq self.group
+				| 		link
+				| 	end
+				| 	ifn page.group eq self.group
+				|		if page.group eq "public"
+				| 			link
+				|		end
+				| 	end
+				| end
+			</ul>
+			<span class="menu-heading">Puppugeneraattorit</span>
+			<ul>
+				| for page in demos
+				| 	if page.group eq self.group
+				| 		link
+				| 	end
+				| end
+			</ul>
+		</nav>
+		<div class="content">
+			|content|
+		</div>
+	</body>
+</html>

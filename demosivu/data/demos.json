@@ -1,0 +1,32 @@
+[
+	{
+		"name": "gradut",
+		"title": "Gradugeneraattori",
+		"desc": ["Aineistona käytetty 16 032 gradutiivistelmää (45 Mt)."],
+		"button": "Generoi tiivistelmä.",
+		"model": "txl1-gradut",
+		"generator": "generateTextWithXXBOS",
+		"defaultN": "400",
+		"group": "public"
+	},
+	{
+		"name": "rsuomi",
+		"title": "r/suomi-generaattori",
+		"desc": ["Aineistona käytetty r/suomi-alaredditin viestejä vuoteen 2015 asti (41 Mt)."],
+		"button": "Generoi tajunnanvirtaa.",
+		"model": "txl1-rsuomi",
+		"generator": "generateText",
+		"defaultN": "100",
+		"group": "public"
+	},
+	{
+		"name": "vaalikone",
+		"title": "Vaalikonegeneraattori",
+		"desc": ["Aineistona käytetty Ylen vuoden 2019 eduskuntavaalikoneen vastauksia (16 Mt)."],
+		"link": "https://yle.fi/uutiset/3-10725384",
+		"button": "Generoi kannanotto.",
+		"model": "txl1-vaalidata",
+		"templatefile": "demos/vaalidata.plan",
+		"group": "public"
+	}
+]

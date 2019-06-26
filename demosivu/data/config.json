@@ -1,0 +1,16 @@
+{
+	"site_name": "Puppugeneraattorit",
+	"pageclasses": [
+		{
+			"name": "top_pages",
+			"dir": "",
+			"datafile": "top_pages.json"
+		},
+		{
+			"name": "demos",
+			"dir": "demot",
+			"datafile": "demos.json",
+			"templatefile": "_demo.plan"
+		}
+	]
+}

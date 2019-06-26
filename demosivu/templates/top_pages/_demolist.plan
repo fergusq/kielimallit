@@ -1,0 +1,15 @@
+<dl>
+| for demo in demos |
+	| if demo.group eq self.group |
+	<dt>|demo.title|</dt>
+	<dd>
+	| for para in demo.desc |
+		<p>|para|</p>
+	| end |
+	| ifdef demo.link |
+		<a href="|demo.link|">|demo.link|</a>
+	| end |
+	</dd>
+	| end |
+| end |
+</dl>

@@ -1,0 +1,8 @@
+[
+	{
+		"name": "index",
+		"title": "Tietoa sivusta",
+		"templatefile": "top_pages/index.plan",
+		"group": "public"
+	}
+]

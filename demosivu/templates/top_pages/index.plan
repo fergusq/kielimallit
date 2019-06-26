@@ -1,0 +1,10 @@
+| block content |
+	<h1>Puppugeneraattorit</h1>
+	<p>Tämä sivu sisältää suomenkielisiä puppugeneraattoridemoja.</p>
+	| include "templates/top_pages/_demolist.plan" |
+	<p>
+		Mikäli sivussa ilmenee ongelmia tai muuta kysyttävää, ota yhteys tekijä Iikka Hauhioon (etunimi at kaivos piste org).
+	</p>
+| end |
+
+| include "templates/_page.plan" |
