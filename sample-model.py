@@ -20,12 +20,38 @@ def pred_batch(learner, xb):
 	a = learner.model.eval()(xb)
 	return F.softmax(a[0].detach().cpu(), dim=-1), a[1]
 
+def weightedPredict(
+	vocab, learners, tokens: List[str], n: int = 1, temperature: float = 1., repetition_penalty: float = 0.,
+	excluded_tokens: List[str] = ["<unk>"], promoted_tokens:List[str]=[]
+):
+	for learner in learners:
+		learner.model.reset()
+	
+	xb = torch.tensor([vocab.numericalize(tokens or [""])])
+	history = []
+	for i_x in range(n):
+		res = sum([learner.pred_batch(batch=(xb,torch.tensor([0])))[0][-1] for learner in learners]) / len(learners)
+		for token in excluded_tokens:
+			res[learner.data.vocab.stoi[token]] = 0.
+		
+		if repetition_penalty > 0.:
+			for i, token_id in enumerate(reversed(history)):
+				res[token_id] *= 1.0-repetition_penalty*2**(-i*.1)
+		
+		if temperature != 1.:
+			res.pow_(1 / temperature)
+		
+		idx = torch.multinomial(res, 1).item()
+		
+		yield learner.data.vocab.itos[idx]
+		history.append(idx)
+
 def predict(vocab, learner, tokens:List[str], n_words:int=1, temperature:float=1., min_p:float=None,
             excluded_tokens:List[str]=["<unk>"],
             promoted_tokens:List[str]=[],
             interactive=False,
             track="",
-            repetition_penalty=False):
+            repetition_penalty:float=0.):
 	"Return the `n_words` that come after `tokens`."
 	learner.model.reset()
 	# generoidaan väritystilassa todennäköisyydet myös kehotteelle, joten ei syötetä kehotetta mallille alussa
@@ -52,9 +78,9 @@ def predict(vocab, learner, tokens:List[str], n_words:int=1, temperature:float=1
 		for token in promoted_tokens:
 			res[learner.data.vocab.stoi[token]] *= 10.
 		
-		if repetition_penalty:
+		if repetition_penalty > 0.:
 			for i, token_id in enumerate(reversed(history)):
-				res[token_id] *= 1.0-0.7*2**(-i*.1);
+				res[token_id] *= 1.0-repetition_penalty*2**(-i*.1)
 		
 		if min_p is not None: 
 			if (res >= min_p).float().sum() == 0:
@@ -142,7 +168,7 @@ def main(vocab_prefix, model_file, n=0, en=False, prompt="", heatmaps=False, tra
 			"excl": [lambda s: s.split(" "), ["<unk>"]],
 			"promo": [lambda s: s.split(" "), []],
 			"interactive": [lambda s: (False if s.lower() in ["", "0", "false", "f"] else True), False],
-			"repetition_penalty": [lambda s: (False if s.lower() in ["", "0", "false", "f"] else True), False],
+			"repe": [float, 0.],
 			"color": [str, ""]
 	}
 	if n:
