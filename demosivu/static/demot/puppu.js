@@ -33,7 +33,7 @@ function fixCase(text) {
 			cap |= a.length && a.every(alt => alt.BASEFORM && alt.BASEFORM.toLowerCase() !== alt.BASEFORM);
 		}
 		ans += cap ? token.text.capitalize() : token.text;
-		if (token.type !== "WHITESPACE") {
+		if (token.type !== "WHITESPACE" && !["-", "\"", "'"].includes(token.text)) {
 			capitalize = [".", "?", "!"].includes(token.text);
 		}
 	}
@@ -50,7 +50,7 @@ async function generateTextWithXXBOS() {
 	const prompt = ("xxbos " + document.getElementById("prompt").value).trim().toLowerCase();
 	document.getElementById("generated-text").style.display = "none";
 	let text = await generate(n, prompt);
-	text = fixCase(text.replace(/xxbos\s*/, "").replace(/\s+br\s+/g, "\n\n").replace(/xxbos.*/g, ""));
+	text = fixCase(text.replace(/xxbos\s*/, "").replace(/\s+(br\s+)+/g, "\n\n").replace(/xxbos.*/g, ""));
 	document.getElementById("generated-text").style.display = "block";
 	document.getElementById("generated-text").innerText = text;
 	document.getElementById("gen-button").disabled = false;
