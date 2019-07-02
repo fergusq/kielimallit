@@ -35,7 +35,7 @@ def createApp(models):
 		temperature = float(params.get("temp", "0.7"))
 		prompt = params.get("prompt", "")
 		tokens = spm.EncodeAsPieces(prompt)
-		prediction = sample.predict(vocab, learner, tokens, n, temperature=temperature, repetition_penalty=True)
+		prediction = sample.predict(vocab, learner, tokens, n, temperature=temperature, repetition_penalty=0.7)
 		res = make_response(jsonify({"prompt": prompt, "prediction": "".join(prediction).replace("▁", " ").strip()}))
 		res.headers["Access-Control-Allow-Origin"] = "*"
 		return res

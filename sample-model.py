@@ -21,11 +21,11 @@ def pred_batch(learner, xb):
 	return F.softmax(a[0].detach().cpu(), dim=-1), a[1]
 
 def predict(vocab, learner, tokens:List[str], n_words:int=1, temperature:float=1., min_p:float=None,
-            excluded_tokens:List[str]=["<unk>"],
-            promoted_tokens:List[str]=[],
-            interactive=False,
-            track="",
-            repetition_penalty=False):
+	    excluded_tokens:List[str]=["<unk>"],
+	    promoted_tokens:List[str]=[],
+	    interactive=False,
+	    track="",
+	    repetition_penalty:float=0.):
 	"Return the `n_words` that come after `tokens`."
 	learner.model.reset()
 	# generoidaan väritystilassa todennäköisyydet myös kehotteelle, joten ei syötetä kehotetta mallille alussa
@@ -52,9 +52,9 @@ def predict(vocab, learner, tokens:List[str], n_words:int=1, temperature:float=1
 		for token in promoted_tokens:
 			res[learner.data.vocab.stoi[token]] *= 10.
 		
-		if repetition_penalty:
+		if repetition_penalty > 0.:
 			for i, token_id in enumerate(reversed(history)):
-				res[token_id] *= 1.0-0.7*2**(-i*.1);
+				res[token_id] *= 1.0-repetition_penalty*2**(-i*.1)
 		
 		if min_p is not None: 
 			if (res >= min_p).float().sum() == 0:
@@ -142,7 +142,7 @@ def main(vocab_prefix, model_file, n=0, en=False, prompt="", heatmaps=False, tra
 			"excl": [lambda s: s.split(" "), ["<unk>"]],
 			"promo": [lambda s: s.split(" "), []],
 			"interactive": [lambda s: (False if s.lower() in ["", "0", "false", "f"] else True), False],
-			"repetition_penalty": [lambda s: (False if s.lower() in ["", "0", "false", "f"] else True), False],
+			"repe": [float, 0.],
 			"color": [str, ""]
 	}
 	if n:
@@ -175,7 +175,7 @@ def main(vocab_prefix, model_file, n=0, en=False, prompt="", heatmaps=False, tra
 					excluded_tokens=params["excl"][1],
 					promoted_tokens=params["promo"][1],
 					interactive=params["interactive"][1],
-					repetition_penalty=params["repetition_penalty"][1],
+					repetition_penalty=params["repe"][1],
 					track=params["color"][1])
 			
 			out = ""
