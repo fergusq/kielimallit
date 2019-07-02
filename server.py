@@ -13,7 +13,10 @@ def initModel(vocab_prefix, model_file, transformerxl=False):
 	spm = sp.SentencePieceProcessor()
 	spm.Load(vocab_prefix + ".model")
 	db = fatext.data.TextLMDataBunch.from_ids(".", vocab, np.array([[0]]), np.array([[0]]))
-	learner = fatext.learner.language_model_learner(db, fatext.models.AWD_LSTM if not transformerxl else fatext.models.TransformerXL, pretrained=False)
+	if transformerxl:
+		learner = fatext.learner.language_model_learner(db, fatext.models.TransformerXL, pretrained=False)
+	else:
+		learner = fatext.learner.language_model_learner(db, fatext.models.AWD_LSTM, pretrained=False, config={**fatext.models.awd_lstm_lm_config, "n_hid": 1150})
 	learner.load(model_file)
 	return vocab, spm, learner
 
