@@ -1,8 +1,11 @@
 from flask import Flask, jsonify, request, make_response, Response
+from flask_sockets import Sockets
 import fastai.text as fatext
 import numpy as np
 import sentencepiece as sp
 import argparse
+import traceback
+import json
 import importlib
 sample = importlib.import_module("sample-model")
 
@@ -22,6 +25,7 @@ def initModel(vocab_prefix, model_file, transformerxl=False):
 
 def createApp(models):
 	app = Flask(__name__)
+	sockets = Sockets(app)
 
 	@app.route("/predict/<model_name>", methods=["GET", "POST"])
 	def predict(model_name) -> Response:
@@ -35,6 +39,23 @@ def createApp(models):
 		res = make_response(jsonify({"prompt": prompt, "prediction": "".join(prediction).replace("▁", " ").strip()}))
 		res.headers["Access-Control-Allow-Origin"] = "*"
 		return res
+	
+	@sockets.route("/predict-ws")
+	def predictSocket(ws):
+		try:
+			while not ws.closed:
+				message = json.loads(ws.receive())
+				command = message["command"]
+				if command == "generate":
+					n = int(message.get("n", "100"))
+					temperature = float(message.get("temp", "0.7"))
+					prompt = message.get("prompt", "")
+					tokens = spm.EncodeAsPieces(prompt)
+					prediction = sample.predict(vocab, learner, tokens, n, temperature=temperature, repetition_penalty=True)
+					ws.send(json.dumps({"command": "append", "tokens": "".join(prediction).replace("▁", " ").strip()}))
+				
+		except:
+			traceback.print_exc()	
 	
 	return app
 
