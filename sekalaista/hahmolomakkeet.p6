@@ -112,7 +112,7 @@ my @char-vars =
 	"lapsena", "jo silloin, kun olit lapsi,",
 	"vuodet kuluvat", "vuodet kuluvat ja",
 	"viime aikoina", "viime aikoina olet",
-	"tulevaisuudessa", "tukevaisuudessa tahtoisit vain",
+	"tulevaisuudessa", "tulevaisuudessa tahtoisit vain",
 	"kuukausi", "muutama kuukausi sitten",
 	"viikko", "joitakin viikkoja sitten";
 
