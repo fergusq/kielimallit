@@ -128,6 +128,8 @@
 		<div class="content">
 			<div id="loading" style="display: none;">
 				<progress id="progress"></progress>
+				<p>Normaalisti kannanoton lataaminen kestää 5 sekuntia.
+				Jos teksti ei lataudu, palvelimella saattaa olla ruuhkaa.</p>
 			</div>
 			<div id="generated-text-container" style="display: none;">
 				<h2 id="question"></h2>

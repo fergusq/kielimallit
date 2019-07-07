@@ -32,10 +32,12 @@
 				</label>
 			</fieldset>
 		</div>
-		<button id="gen-button" onclick="|self.generator|()">|self.button|</button>
+		<button id="gen-button" onclick="|self.generator|()" disabled>|self.button|</button>
 		<div class="content">
 			<div id="loading" style="display: none;">
 				<progress id="progress"></progress>
+				<p>Normaalisti pitkän tekstin lataaminen kestää 20 sekuntia.
+				Jos teksti ei lataudu, palvelimella saattaa olla ruuhkaa.</p>
 			</div>
 			<div id="generated-text" style="display: none;">
 		

@@ -16,7 +16,7 @@ def loadVocab(filename):
 	return fatext.transform.Vocab(tokens)
 
 class Models:
-	def __init__(self, vocab, learners: Tuple[float, Any]):
+	def __init__(self, vocab, learners: List[Tuple[float, Any]]):
 		self.vocab = vocab
 		self.learners = learners
 		self.n = 100

@@ -1,15 +1,17 @@
 from flask import Flask, jsonify, request, make_response, Response
+from flask_sockets import Sockets
 import fastai.text as fatext
 import numpy as np
 import sentencepiece as sp
 import argparse
-import importlib
-sample = importlib.import_module("sample-model")
+import traceback
+import json
+import predict
 
 from typing import Tuple
 
 def initModel(vocab_prefix, model_file, transformerxl=False):
-	vocab = sample.loadVocab(vocab_prefix + ".vocab")
+	vocab = predict.loadVocab(vocab_prefix + ".vocab")
 	spm = sp.SentencePieceProcessor()
 	spm.Load(vocab_prefix + ".model")
 	db = fatext.data.TextLMDataBunch.from_ids(".", vocab, np.array([[0]]), np.array([[0]]))
@@ -22,35 +24,69 @@ def initModel(vocab_prefix, model_file, transformerxl=False):
 
 def createApp(models):
 	app = Flask(__name__)
+	sockets = Sockets(app)
 
 	@app.route("/predict/<model_name>", methods=["GET", "POST"])
-	def predict(model_name) -> Response:
+	def predictNormal(model_name) -> Response:
 		vocab, spm, learner = models[model_name]
+		model = predict.Models(vocab, [(1., learner)])
 		params = request.args if request.method == "GET" else request.form
-		n = int(params.get("n", "100"))
-		temperature = float(params.get("temp", "0.7"))
+		model.n = int(params.get("n", "100"))
+		model.temperature = float(params.get("temp", "0.7"))
+		model.repetition_penalty = 0.7
 		prompt = params.get("prompt", "")
 		tokens = spm.EncodeAsPieces(prompt)
-		prediction = sample.predict(vocab, learner, tokens, n, temperature=temperature, repetition_penalty=0.7)
+		prediction = model.weightedPredict(tokens)
 		res = make_response(jsonify({"prompt": prompt, "prediction": "".join(prediction).replace("▁", " ").strip()}))
 		res.headers["Access-Control-Allow-Origin"] = "*"
 		return res
+	
+	@sockets.route("/predictws")
+	def predictSocket(ws):
+		try:
+			while not ws.closed:
+				raw_message = ws.receive()
+				if not raw_message:
+					continue
+
+				message = json.loads(raw_message)
+				command = message["command"]
+				if command == "select-model":
+					vocab, spm, learner = models[message["model-name"]]
+					model = predict.Models(vocab, [(1., learner)])
+					model.repetition_penalty = 0.7
+				if command == "generate":
+					model.n = int(message.get("n", "100"))
+					model.temperature = float(message.get("temp", "0.7"))
+					prompt = message.get("prompt", "")
+					tokens = spm.EncodeAsPieces(prompt)
+					prediction = model.weightedPredict(tokens)
+					for token in prediction:
+						ws.send(json.dumps({"command": "append", "token": token.replace("▁", " ")}))
+					
+					ws.send(json.dumps({"command": "end"}))
+				
+		except:
+			traceback.print_exc()	
 	
 	return app
 
 def main():
 	parser = argparse.ArgumentParser()
-	parser.add_argument("port")
+	parser.add_argument("port", type=int)
 	parser.add_argument("vocab_prefix")
 	parser.add_argument("model_file")
 	parser.add_argument("--transformerxl", action="store_true")
 	args = parser.parse_args()
 
-	vocab, spm, learner = initModel(args.vocab_prefix, args.model_file, args.transformerxl)
+	model = initModel(args.vocab_prefix, args.model_file, args.transformerxl)
 
-	app = createApp({args.model_file: (vocab, spm, learner)})
+	app = createApp({args.model_file: model})
 
-	app.run(port=args.port)
+	from gevent import pywsgi
+	from geventwebsocket.handler import WebSocketHandler
+	server = pywsgi.WSGIServer(('', args.port), app, handler_class=WebSocketHandler)
+	server.serve_forever()
 
 if __name__ == "__main__":
 	main()
