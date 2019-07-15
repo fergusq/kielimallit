@@ -110,7 +110,7 @@ multi-var 3, "intro", {predict "@characters[0..^*].join(Q/, /) ja @characters[*-
 
 my @char-vars =
 	"lapsena", "jo silloin, kun olit lapsi,",
-	"vuodet kuluvat", "vuodet kuluvat ja",
+	"olet varma", "olet varma siitä, että",
 	"viime aikoina", "viime aikoina olet",
 	"tulevaisuudessa", "tulevaisuudessa tahtoisit vain",
 	"kuukausi", "muutama kuukausi sitten",
@@ -156,9 +156,9 @@ sub make-pdf() {
 		$fh.put: "\n# $char.tc(): tausta";
 		$fh.put: capitalize get-val $char;
 		$fh.put: "\n## Lapsuus\n" ~ get-choices 3, "$char lapsena";
-		$fh.put: "\n## Vuodet kuluvat\n" ~ get-choices 3, "$char vuodet kuluvat";
 		$fh.put: "\n## Viime aikoina\n" ~ get-choices 3, "$char viime aikoina";
 		$fh.put: "\n## Tulevaisuudessa\n" ~ get-choices 3, "$char tulevaisuudessa";
+		$fh.put: "\n## Olet varma\n" ~ get-choices 3, "$char olet varma";
 		$fh.put: "\n```\{=ms}\n.bp\n```";
 		$fh.put: "\n# $char.tc(): tutut";
 		for friends($char) -> $friend {
