@@ -20,6 +20,7 @@ class Models:
 		self.vocab = vocab
 		self.learners = learners
 		self.n = 100
+		self.end = 0
 		self.temperature = 0.7
 		self.repetition_penalty = 0.
 		self.excluded_tokens = ["<unk>"]
@@ -31,7 +32,8 @@ class Models:
 		
 		xb = torch.tensor([self.vocab.numericalize(tokens or [""])])
 		history = []
-		for i_x in range(self.n):
+		i_x = 0
+		while True:
 			res = sum([w*learner.pred_batch(batch=(xb,torch.tensor([0])))[0][-1] for w, learner in self.learners])
 			for token in self.excluded_tokens:
 				res[self.vocab.stoi[token]] = 0.
@@ -47,11 +49,20 @@ class Models:
 				res.pow_(1 / self.temperature)
 			
 			idx = torch.multinomial(res, 1).item()
+			tok = self.vocab.itos[idx]
 			
-			yield self.vocab.itos[idx]
+			if tok == self.end:
+				break
+			
+			yield tok
 			history.append(idx)
 			
 			xb = xb.new_tensor([idx])[None]
+			
+			i_x += 1
+			
+			if i_x == self.n:
+				break
 
 def model(s):
     try:
@@ -88,14 +99,22 @@ def main():
 		
 		if text.startswith("/n "):
 			models.n = int(text.split(" ")[1])
+			models.end = None
 		elif text.startswith("/temp "):
 			models.temperature = float(text.split(" ")[1])
 		elif text.startswith("/repe "):
 			models.repetition_penalty = float(text.split(" ")[1])
+		elif text.startswith("/end "):
+			models.end = text.split(" ")[1]
+			models.n = None
 		else:
 			tokens = spm.EncodeAsPieces(text)
 			for i, token in enumerate(models.weightedPredict(tokens)):
-				print("\x1b[" + ("0m" if i%2 == 0 else "4m") + token.replace("▁", " "), end="")
+				if token == "▁br":
+					print("")
+				else:
+					print("\x1b[" + ("0m" if i%2 == 0 else "4m") + token.replace("▁", " "), end="")
+				
 				sys.stdout.flush()
 			
 			print("\x1b[0m")
