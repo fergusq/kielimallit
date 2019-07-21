@@ -10,6 +10,28 @@
 		"group": "public"
 	},
 	{
+		"name": "einoleino",
+		"title": "Eino Leino -generaattori",
+		"desc": ["Aineistona käytetty Eino Leinon runoja."],
+		"button": "Generoi runo.",
+		"model": "txl1-einoleino",
+		"generator": "generateTextWithXXBOS",
+		"defaultN": "200",
+		"brReplacement": "\\n",
+		"group": "public"
+	},
+	{
+		"name": "kalevala",
+		"title": "Kalevalageneraattori",
+		"desc": ["Aineistona käytetty Kalevalaa (616 kt)."],
+		"button": "Generoi runo.",
+		"model": "txl1-kalevala",
+		"generator": "generateTextWithXXBOS",
+		"defaultN": "200",
+		"brReplacement": "\\n",
+		"group": "public"
+	},
+	{
 		"name": "rsuomi",
 		"title": "r/suomi-generaattori",
 		"desc": ["Aineistona käytetty r/suomi-alaredditin viestejä vuoteen 2015 asti (41 Mt)."],
