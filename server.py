@@ -55,6 +55,13 @@ def createApp(models):
 					vocab, spm, learner = models[message["model-name"]]
 					model = predict.Models(vocab, [(1., learner)])
 					model.repetition_penalty = 0.7
+				if command == "select-models":
+					m = []					
+					for [w, model_name] in message["models"]:
+						vocab, spm, learner = models[model_name]
+						m.append((w, learner))
+					model = predict.Models(vocab, m)
+					model.repetition_penalty = 0.7
 				if command == "generate":
 					model.n = int(message.get("n", "100"))
 					model.temperature = float(message.get("temp", "0.7"))
