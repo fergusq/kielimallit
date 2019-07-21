@@ -51,6 +51,10 @@ nav > ul > li > a {
 	font-weight: bold;
 }
 
+.menu-note {
+	font-style: italic;
+}
+
 nav > ul {
 	padding-left: 0px;
 }

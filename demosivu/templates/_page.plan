@@ -36,6 +36,13 @@
 				| 	end
 				| end
 			</ul>
+			| ifn self.group eq "public" |
+				<div class="menu-note">
+					Näytetään vain salainen ryhmä "|self.group|".<br/>
+					Muut generaattorit löytyvät
+					<a href="|root top_pages_map.index.path|">etusivulta</a>.
+				</div>
+			| end |
 		</nav>
 		<div class="content">
 			|content|
