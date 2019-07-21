@@ -17,7 +17,7 @@ def main(vocab_file, input_file, epochs=25):
 	print("Loading vocab...")
 	vocab = loadVocab(vocab_file)
 	print("Loading data...")
-	data = np.load(input_file)
+	data = np.load(input_file, allow_pickle=True)
 	train_set = data[len(data)//10:]
 	valid_set = data[:len(data)//10]
 	print("Loading learner...")
