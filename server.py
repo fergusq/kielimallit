@@ -33,6 +33,7 @@ def createApp(models):
 		params = request.args if request.method == "GET" else request.form
 		model.n = int(params.get("n", "100"))
 		model.temperature = float(params.get("temp", "0.7"))
+		model.end = params.get("end", None)
 		model.repetition_penalty = 0.7
 		prompt = params.get("prompt", "")
 		tokens = spm.EncodeAsPieces(prompt)
