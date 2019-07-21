@@ -1,6 +1,7 @@
 const libvoikko = Libvoikko();
 var voikko, interval, progress = 0;
 const socket = new WebSocket("wss://puppu.kaivos.org/predictws");
+const preprompt = "Kerran eräänä iltana ollessani ulkona tupakalla, samalla kun join kahvia, kuulin oven käyvän. xxbos ";
 async function generate(n, prompt) {
 	startProgress(n);
 	document.getElementById("loading").style.display = "block";
@@ -30,7 +31,11 @@ var generating = false, generatedText = "", generationFinished, generationFailed
 
 socket.onopen = function () {
 	document.getElementById("gen-button").disabled = false;
-	socket.send(JSON.stringify({command: "select-model", "model-name": model}));
+	if (typeof model === "string") {
+		socket.send(JSON.stringify({command: "select-model", "model-name": model}));
+	} else {
+		socket.send(JSON.stringify({command: "select-models", "models": model}));
+	}
 }
 
 socket.onmessage = function (event) {
@@ -39,7 +44,7 @@ socket.onmessage = function (event) {
 	if (data.command === "append") {
 		generatedText += data.token;
 		generateI += 1;
-		document.getElementById("generated-text").innerText = fixCaseAndXXBOS(generatedText);
+		document.getElementById("generated-text").innerText = fixCaseAndXXBOS(generatedText.substr(preprompt.length));
 		document.getElementById("progress").value = generateI/generateN;
 	} else if (data.command === "end") {
 		generationFinished(generatedText);
@@ -68,7 +73,7 @@ function generateInParts(n, prompt) {
 }
 
 function fixCaseAndXXBOS(text) {
-	return fixCase(text.replace(/xxbos\s*/, "").replace(/\s+(br\s+)+/g, "\n\n").replace(/xxbos.*/g, ""));
+	return fixCase(text.replace(/\s+br\b/g, brReplacement || "\n").replace(/xxbos[.\n]*/gi, ""));
 }
 
 function fixCase(text) {
@@ -98,10 +103,10 @@ String.prototype.capitalize = function() {
 async function generateTextWithXXBOS() {
 	document.getElementById("gen-button").disabled = true;
 	const n = parseInt(document.getElementById("select-n").value);
-	const prompt = ("xxbos " + document.getElementById("prompt").value).trim().toLowerCase();
+	const prompt = (preprompt + document.getElementById("prompt").value).toLowerCase();
 	document.getElementById("generated-text").style.display = "block";
 	let text = await generateInParts(n, prompt);
-	text = fixCaseAndXXBOS(text);
+	text = fixCaseAndXXBOS(text.substr(preprompt.length));
 	document.getElementById("generated-text").innerText = text;
 	document.getElementById("gen-button").disabled = false;
 }
@@ -131,13 +136,13 @@ async function generateElectionData() {
 	document.getElementById("generated-text-container").style.display = "none";
 	
 	const text = await generate(n, prompt);
-	const matches = text.match(/kysymys (\d+), vastaus ([1-5]), perustelu: ([^/]*)(\/|$)/);
+	const matches = text.match(/vastaus ([1-5]), perustelu: ([^/]*)(\/|$)/);
 	
 	document.getElementById("generated-text-container").style.display = "block";
 	
-	document.getElementById("generated-text").innerText = fixCase(matches[3]);
+	document.getElementById("generated-text").innerText = fixCase(matches[2]);
 	
-	const num = parseInt(matches[2])-1;
+	const num = parseInt(matches[1])-1;
 	const circles = [0,0,0,0,0].map(_ => "<td><span class=oth>○</span></td>");
 	circles[num] = `<td><span class="sel" style="color: ${colors[num]}">●</span></td>`;
 	document.getElementById("num").innerHTML = circles.join("");
