@@ -1,6 +1,17 @@
 | block additional_head |
 	<script>
+		| ifdef self.model |
 		const model = "|self.model|";
+		| end |
+		| ifdef self.models |
+		const model = |self.models|;
+		| end |
+		| ifdef self.brReplacement |
+		const brReplacement = "|self.brReplacement|";
+		| end |
+		| ifndef self.brReplacement |
+		const brReplacement = "\n\n";
+		| end |
 		window.onload = function() {
 			document.getElementById("select-n").value = |self.defaultN|;
 			document.getElementById("prompt").value = "";
