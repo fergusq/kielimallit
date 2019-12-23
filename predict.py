@@ -7,6 +7,7 @@ import torch.nn.functional as F
 import argparse
 import sys
 import readline
+import re
 from typing import List, Tuple, Any
 
 def loadVocab(filename):
@@ -19,16 +20,25 @@ class Models:
 	def __init__(self, vocab, learners: List[Tuple[float, Any]]):
 		self.vocab = vocab
 		self.learners = learners
-		self.n = 100
-		self.end = 0
+		self.n = None
+		self.end = "▁xx"
+		self.allowed = None
 		self.temperature = 0.7
-		self.repetition_penalty = 0.
+		self.repetition_penalty = 0.7
 		self.excluded_tokens = ["<unk>"]
 		self.promoted_tokens = []
 
 	def weightedPredict(self, tokens: List[str]):
 		for _, learner in self.learners:
 			learner.model.reset()
+		
+		if self.allowed:
+			allow = torch.zeros([len(self.vocab.stoi)])
+			for i, s in enumerate(self.vocab.stoi):
+				if self.allowed.search(s):
+					allow[i] = 1.
+		else:
+			allow = torch.ones([len(self.vocab.stoi)])
 		
 		xb = torch.tensor([self.vocab.numericalize(tokens or [""])])
 		history = []
@@ -44,6 +54,8 @@ class Models:
 			if self.repetition_penalty > 0.:
 				for i, token_id in enumerate(reversed(history)):
 					res[token_id] *= 1.0-self.repetition_penalty*2**(-i*.1)
+			
+			res.mul_(allow)
 			
 			if self.temperature != 1.:
 				res.pow_(1 / self.temperature)
@@ -105,8 +117,10 @@ def main():
 		elif text.startswith("/repe "):
 			models.repetition_penalty = float(text.split(" ")[1])
 		elif text.startswith("/end "):
-			models.end = text.split(" ")[1]
+			models.end = text.split(" ")[1].replace("_", "▁")
 			models.n = None
+		elif text.startswith("/allow "):
+			models.allowed = re.compile(text[text.index(" ")+1:])
 		else:
 			tokens = spm.EncodeAsPieces(text)
 			for i, token in enumerate(models.weightedPredict(tokens)):
