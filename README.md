@@ -60,6 +60,8 @@ Data on tätä varten muutettava CSV-muotoon esimerkiksi seuraavasti:
 ## Sekalaisia skriptejä
 
 * `data/vaalidata.p6`: Muuttaa Ylen vaalidatan alkuperäisestä CSV-muodosta yksisarakkeiseen CSV-muotoon, jonka voi syöttää helposti mallille.
+* `data/vaalidata-puolueet.p6`: Muuttaa vaalidatan muotoon, jossa on mukana tieto puolueesta.
 * `sekalaista/filter-by-names.p6`: Skripi syö CONLL-U-tiedoston ja valitsee joukon erisnimiä ja filteröi pois lauseet, joissa ei käytetä näitä erisnimiä.
 * `sekalaista/find-nearest.p6`: Skriptillä voi etsiä tekstitiedostosta annetuilla sanoilla. Hyödyllinen, jos haluaa selvittää, mihin teksteihin generoitu teksti perustuu. Hitaahko.
 * `sekalaista/format-election-data.p6`: Skriptin avulla voi tehdä Markdown-tiedoston generoidusta vaalikonedatasta.
+* `sekalaista/lausepuhelu.p6`: Skripti interaktiiviseen tekstingenerointiin: ohjelma kirjoittaa tekstiä, sitten ihminen kirjoittaa vähän tekstiä ja sitten taas ohjelma, jne.
